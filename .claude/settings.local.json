@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(bmad:bmm:workflows:create-prd)",
+      "WebSearch",
+      "Skill(bmad:bmm:workflows:workflow-status)",
+      "Skill(bmad:bmm:workflows:quick-dev)"
+    ]
+  }
+}

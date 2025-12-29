@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דיווח על אירוע בטיחות - Safety First</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <a href="index.html" class="back-link">← חזרה</a>
+            <h1>דיווח על אירוע בטיחות</h1>
+            <p class="subtitle">ללא צורך בהתחברות</p>
+        </header>
+
+        <main class="form-container">
+            <form id="incidentForm" class="incident-form">
+
+                <!-- Photo Upload -->
+                <div class="form-section">
+                    <label class="form-label">תמונה (אופציונלי)</label>
+                    <div class="photo-upload-area">
+                        <input
+                            type="file"
+                            id="photoInput"
+                            accept="image/*"
+                            capture="environment"
+                            style="display: none;"
+                        >
+                        <button type="button" class="photo-btn" onclick="document.getElementById('photoInput').click()">
+                            📷 צלם תמונה
+                        </button>
+                        <div id="photoPreview" class="photo-preview" style="display: none;">
+                            <img id="previewImage" src="" alt="תצוגה מקדימה">
+                            <button type="button" class="remove-photo-btn" onclick="removePhoto()">✕ הסר תמונה</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="form-section">
+                    <label for="location" class="form-label">מיקום האירוע *</label>
+                    <select id="location" class="form-select" required>
+                        <option value="">בחר מיקום</option>
+                        <option value="production_line">פס ייצור</option>
+                        <option value="loading_dock">רציף טעינה</option>
+                        <option value="warehouse">מחסן</option>
+                        <option value="parking">חניה</option>
+                        <option value="cafeteria">חדר אוכל</option>
+                        <option value="other">אחר</option>
+                    </select>
+                </div>
+
+                <!-- Severity -->
+                <div class="form-section">
+                    <label class="form-label">רמת חומרה *</label>
+                    <div class="severity-picker">
+                        <button type="button" class="severity-btn" data-severity="unknown" onclick="selectSeverity('unknown')">
+                            <span class="severity-icon">❓</span>
+                            <span class="severity-label">לא ידוע</span>
+                        </button>
+                        <button type="button" class="severity-btn" data-severity="near_miss" onclick="selectSeverity('near_miss')">
+                            <span class="severity-icon">⚠️</span>
+                            <span class="severity-label">כמעט אירוע</span>
+                        </button>
+                        <button type="button" class="severity-btn" data-severity="minor" onclick="selectSeverity('minor')">
+                            <span class="severity-icon">🟡</span>
+                            <span class="severity-label">קל</span>
+                        </button>
+                        <button type="button" class="severity-btn" data-severity="major" onclick="selectSeverity('major')">
+                            <span class="severity-icon">🟠</span>
+                            <span class="severity-label">בינוני</span>
+                        </button>
+                        <button type="button" class="severity-btn" data-severity="critical" onclick="selectSeverity('critical')">
+                            <span class="severity-icon">🔴</span>
+                            <span class="severity-label">קריטי</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="severity" value="unknown">
+                </div>
+
+                <!-- Reporter Name -->
+                <div class="form-section">
+                    <label for="reporterName" class="form-label">שם המדווח (אופציונלי)</label>
+                    <input
+                        type="text"
+                        id="reporterName"
+                        class="form-input"
+                        placeholder="השאר ריק לדיווח אנונימי"
+                    >
+                    <p class="form-hint">ניתן להשאיר ריק לדיווח אנונימי מוחלט</p>
+                </div>
+
+                <!-- Description -->
+                <div class="form-section">
+                    <label for="description" class="form-label">תיאור האירוע (אופציונלי)</label>
+                    <textarea
+                        id="description"
+                        class="form-textarea"
+                        rows="4"
+                        placeholder="תאר מה קרה, איפה, ומה הסיכון..."
+                    ></textarea>
+                </div>
+
+                <!-- Date/Time -->
+                <div class="form-section">
+                    <label for="incidentDate" class="form-label">מתי קרה האירוע? *</label>
+                    <input
+                        type="datetime-local"
+                        id="incidentDate"
+                        class="form-input"
+                        required
+                    >
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-large btn-block">
+                        שלח דיווח
+                    </button>
+                    <a href="index.html" class="btn btn-secondary btn-block">
+                        ביטול
+                    </a>
+                </div>
+            </form>
+
+            <!-- Success Message (hidden initially) -->
+            <div id="successMessage" class="success-message" style="display: none;">
+                <div class="success-icon">✓</div>
+                <h2>הדיווח נשלח בהצלחה!</h2>
+                <p>תודה על הדיווח. האירוע התקבל והועבר לטיפול ממונה הבטיחות.</p>
+                <button class="btn btn-primary" onclick="location.href='public-app.html'">
+                    דווח על אירוע נוסף
+                </button>
+                <a href="index.html" class="btn btn-secondary">
+                    חזרה לדף הבית
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Set default incident date to now
+        function setDefaultDateTime() {
+            const now = new Date();
+            // Format: YYYY-MM-DDTHH:mm
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            document.getElementById('incidentDate').value = formattedDateTime;
+        }
+        setDefaultDateTime();
+
+        // Select severity button
+        let selectedSeverity = 'unknown';
+
+        function selectSeverity(severity) {
+            selectedSeverity = severity;
+            document.getElementById('severity').value = severity;
+
+            // Update button styles
+            document.querySelectorAll('.severity-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const targetBtn = document.querySelector(`[data-severity="${severity}"]`);
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+        }
+
+        // Set default severity when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            selectSeverity('unknown');
+        });
+
+        // Photo handling
+        let photoDataUrl = null;
+
+        document.getElementById('photoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate it's an image
+                if (!file.type.startsWith('image/')) {
+                    alert('אנא בחר קובץ תמונה');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    photoDataUrl = event.target.result;
+                    document.getElementById('previewImage').src = photoDataUrl;
+                    document.getElementById('photoPreview').style.display = 'block';
+                    console.log('Photo loaded successfully, size:', photoDataUrl.length);
+                };
+                reader.onerror = function(error) {
+                    console.error('Error reading file:', error);
+                    alert('שגיאה בטעינת התמונה');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function removePhoto() {
+            photoDataUrl = null;
+            document.getElementById('photoInput').value = '';
+            document.getElementById('photoPreview').style.display = 'none';
+        }
+
+        // Form submission
+        document.getElementById('incidentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Disable submit button to prevent double submission
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'שולח...';
+
+            const incident = {
+                id: 'incident_' + Date.now(),
+                location: document.getElementById('location').value,
+                severity: selectedSeverity,
+                reporterName: document.getElementById('reporterName').value || null,
+                isAnonymous: !document.getElementById('reporterName').value,
+                description: document.getElementById('description').value || '',
+                incidentDate: document.getElementById('incidentDate').value,
+                photoUrl: photoDataUrl,
+                status: 'new',
+                createdAt: new Date().toISOString()
+            };
+
+            // Save to session storage
+            saveNewIncident(incident);
+
+            // Show success message after brief delay to simulate submission
+            setTimeout(function() {
+                document.querySelector('.incident-form').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 500);
+        });
+    </script>
+</body>
+</html>

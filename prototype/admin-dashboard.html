@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול אירועי בטיחות - Safety First</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="dashboard-header">
+            <div class="user-info">
+                <span id="userGreeting"></span>
+                <button class="btn btn-small" onclick="logout()">התנתק</button>
+            </div>
+            <h1>אירועי בטיחות</h1>
+        </header>
+
+        <main class="dashboard-content">
+            <!-- Filters -->
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all" onclick="filterIncidents('all')">
+                    הכל (<span id="countAll">0</span>)
+                </button>
+                <button class="filter-btn" data-filter="new" onclick="filterIncidents('new')">
+                    חדש (<span id="countNew">0</span>)
+                </button>
+                <button class="filter-btn" data-filter="assigned" onclick="filterIncidents('assigned')">
+                    הוקצה (<span id="countAssigned">0</span>)
+                </button>
+                <button class="filter-btn" data-filter="resolved" onclick="filterIncidents('resolved')">
+                    טופל (<span id="countResolved">0</span>)
+                </button>
+            </div>
+
+            <!-- Incident List -->
+            <div id="incidentList" class="incident-list">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">📋</div>
+                <h3>אין אירועים להצגה</h3>
+                <p>לא נמצאו אירועים בסינון הנוכחי</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check authentication
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        if (!isLoggedIn) {
+            window.location.href = 'admin-login.html';
+        }
+
+        const userRole = sessionStorage.getItem('userRole');
+        const userName = sessionStorage.getItem('userName');
+
+        // Display user greeting
+        const roleLabel = userRole === 'safety_officer' ? 'ממונה בטיחות' : 'מנהל';
+        document.getElementById('userGreeting').textContent = `שלום ${userName} (${roleLabel})`;
+
+        // Current filter
+        let currentFilter = 'all';
+
+        // Get all incidents
+        function getAllIncidents() {
+            return getAllIncidentsWithUpdates();
+        }
+
+        // Filter incidents based on role
+        function getFilteredIncidents() {
+            let incidents = getAllIncidents();
+
+            // Role-based filtering
+            if (userRole === 'manager') {
+                // Managers see only incidents assigned to them
+                incidents = incidents.filter(inc =>
+                    inc.assignedTo && inc.assignedTo.toLowerCase() === userName.toLowerCase()
+                );
+            }
+            // Safety officers see all incidents (no filtering needed)
+
+            // Status filtering
+            if (currentFilter !== 'all') {
+                incidents = incidents.filter(inc => inc.status === currentFilter);
+            }
+
+            return incidents;
+        }
+
+        // Render incidents
+        function renderIncidents() {
+            const incidents = getFilteredIncidents();
+            const listContainer = document.getElementById('incidentList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (incidents.length === 0) {
+                listContainer.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            listContainer.innerHTML = incidents.map(incident => `
+                <div class="incident-card" onclick="viewIncident('${incident.id}')">
+                    <div class="incident-card-header">
+                        <div class="status-chip status-${incident.status}">${getStatusLabel(incident.status)}</div>
+                        <div class="severity-badge severity-${incident.severity}">${getSeverityIcon(incident.severity)}</div>
+                    </div>
+                    <div class="incident-card-body">
+                        <h3>${incident.description.substring(0, 60)}${incident.description.length > 60 ? '...' : ''}</h3>
+                        <div class="incident-meta">
+                            <span>📍 ${getLocationLabel(incident.location)}</span>
+                            <span>🕐 ${formatDate(incident.incidentDate || incident.createdAt)}</span>
+                            ${incident.photoUrl ? '<span>📷 תמונה</span>' : ''}
+                        </div>
+                        ${incident.reporterName ? `<div class="reporter-name">👤 ${incident.reporterName}</div>` : '<div class="reporter-name anonymous">🔒 דיווח אנונימי</div>'}
+                        ${incident.assignedTo ? `<div class="assigned-to">✓ הוקצה ל: ${incident.assignedTo}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            updateCounts();
+        }
+
+        // Update filter counts
+        function updateCounts() {
+            const allIncidents = userRole === 'manager'
+                ? getAllIncidents().filter(inc => inc.assignedTo && inc.assignedTo.toLowerCase() === userName.toLowerCase())
+                : getAllIncidents();
+
+            document.getElementById('countAll').textContent = allIncidents.length;
+            document.getElementById('countNew').textContent = allIncidents.filter(i => i.status === 'new').length;
+            document.getElementById('countAssigned').textContent = allIncidents.filter(i => i.status === 'assigned').length;
+            document.getElementById('countResolved').textContent = allIncidents.filter(i => i.status === 'resolved').length;
+        }
+
+        // Filter incidents
+        function filterIncidents(filter) {
+            currentFilter = filter;
+
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+
+            renderIncidents();
+        }
+
+        // View incident detail
+        function viewIncident(incidentId) {
+            sessionStorage.setItem('currentIncidentId', incidentId);
+            window.location.href = 'incident-detail.html';
+        }
+
+        // Logout
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // Helper functions
+        function getStatusLabel(status) {
+            const labels = {
+                'new': 'חדש',
+                'assigned': 'הוקצה',
+                'resolved': 'טופל'
+            };
+            return labels[status] || status;
+        }
+
+        function getSeverityIcon(severity) {
+            const icons = {
+                'unknown': '❓',
+                'near_miss': '⚠️',
+                'minor': '🟡',
+                'major': '🟠',
+                'critical': '🔴'
+            };
+            return icons[severity] || '❓';
+        }
+
+        function getLocationLabel(location) {
+            const labels = {
+                'production_line': 'פס ייצור',
+                'loading_dock': 'רציף טעינה',
+                'warehouse': 'מחסן',
+                'parking': 'חניה',
+                'cafeteria': 'חדר אוכל',
+                'other': 'אחר'
+            };
+            return labels[location] || location;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+
+        // Initial render
+        renderIncidents();
+
+        // Refresh incidents when page becomes visible (e.g., coming back from detail page)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                renderIncidents();
+            }
+        });
+
+        // Also refresh when window regains focus
+        window.addEventListener('focus', function() {
+            renderIncidents();
+        });
+    </script>
+</body>
+</html>

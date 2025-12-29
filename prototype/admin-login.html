@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>כניסה למערכת - Safety First</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <a href="index.html" class="back-link">← חזרה</a>
+            <h1>כניסה למערכת</h1>
+            <p class="subtitle">למנהלים וממוני בטיחות</p>
+        </header>
+
+        <main class="login-container">
+            <div class="card login-card">
+                <div class="login-icon">🔐</div>
+
+                <form id="loginForm" class="login-form">
+                    <!-- Role Selection -->
+                    <div class="form-section">
+                        <label for="role" class="form-label">תפקיד *</label>
+                        <select id="role" class="form-select" required>
+                            <option value="">בחר תפקיד</option>
+                            <option value="safety_officer">ממונה בטיחות</option>
+                            <option value="manager">מנהל</option>
+                        </select>
+                    </div>
+
+                    <!-- Name Input -->
+                    <div class="form-section">
+                        <label for="userName" class="form-label">שם מלא *</label>
+                        <input
+                            type="text"
+                            id="userName"
+                            class="form-input"
+                            placeholder="לדוגמה: אבי כהן"
+                            required
+                        >
+                        <p class="form-hint" id="roleHint" style="display: none;"></p>
+                    </div>
+
+                    <!-- Fake Password (for realism) -->
+                    <div class="form-section">
+                        <label for="password" class="form-label">סיסמה *</label>
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-input"
+                            placeholder="הזן סיסמה כלשהי (לא מאומתת)"
+                            required
+                        >
+                        <p class="form-hint">⚠️ זוהי כניסה מדומה - כל סיסמה תתקבל</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-large btn-block">
+                            כניסה למערכת
+                        </button>
+                        <a href="index.html" class="btn btn-secondary btn-block">
+                            ביטול
+                        </a>
+                    </div>
+                </form>
+
+                <div class="demo-users">
+                    <h3>משתמשים מדומים לבדיקה:</h3>
+                    <ul>
+                        <li><strong>ממונה בטיחות:</strong> אבי כהן (רואה הכל, יכול להקצות)</li>
+                        <li><strong>מנהל:</strong> דנה לוי (רואה רק משימות שהוקצו לה)</li>
+                        <li><strong>מנהל:</strong> משה ישראלי (רואה רק משימות שהוקצו לו)</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Show hint based on role selection
+        document.getElementById('role').addEventListener('change', function() {
+            const hint = document.getElementById('roleHint');
+            if (this.value === 'safety_officer') {
+                hint.textContent = 'ממונה בטיחות רואה את כל האירועים ויכול להקצות לאחראים';
+                hint.style.display = 'block';
+            } else if (this.value === 'manager') {
+                hint.textContent = 'מנהל רואה רק אירועים שהוקצו לו (השתמש בשם "דנה לוי" או "משה ישראלי" כדי לראות אירועים מוקצים)';
+                hint.style.display = 'block';
+            } else {
+                hint.style.display = 'none';
+            }
+        });
+
+        // Handle login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const role = document.getElementById('role').value;
+            const userName = document.getElementById('userName').value;
+
+            // Save to session storage (fake auth)
+            sessionStorage.setItem('userRole', role);
+            sessionStorage.setItem('userName', userName);
+            sessionStorage.setItem('isLoggedIn', 'true');
+
+            // Redirect to dashboard
+            window.location.href = 'admin-dashboard.html';
+        });
+    </script>
+</body>
+</html>
