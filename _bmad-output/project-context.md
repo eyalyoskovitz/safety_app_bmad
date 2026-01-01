@@ -2,8 +2,10 @@
 project_name: 'Safety First'
 user_name: 'Eyaly'
 date: '2025-12-27'
+last_updated: '2025-12-29'
 sections_completed: ['technology_stack', 'language_rules', 'framework_rules', 'code_quality', 'critical_rules']
 status: 'complete'
+notes: 'Updated to reflect latest stable versions (React 19, MUI 7, Vite 7, React Router 7)'
 ---
 
 # Project Context for AI Agents
@@ -16,12 +18,14 @@ This file contains critical rules that AI agents MUST follow when implementing c
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| React | 18.x | UI framework |
+| React | 19.x | UI framework |
 | TypeScript | 5.x | Type safety |
-| Vite | 5.x | Build tool |
-| MUI | 5.x | Component library |
+| Vite | 7.x | Build tool |
+| MUI | 7.x | Component library |
 | Supabase JS | 2.x | Backend client |
-| React Router | 6.x | Routing |
+| React Router | 7.x (Library Mode) | Routing |
+
+**Note:** We use the latest stable versions (as of Dec 2025) for better security, performance, and long-term support. React Router 7 is configured in Library Mode for v6-compatible API.
 
 ---
 
@@ -170,6 +174,40 @@ export const IncidentCard: FC<IncidentCardProps> = ({ ... }) => {
 
 ---
 
+## Development Server Management
+
+**CRITICAL: Always verify dev server is stopped after testing**
+
+When running `npm run dev` for testing, you MUST verify it's stopped afterward:
+
+```bash
+# After testing, verify port 5173 is closed:
+netstat -ano | grep -E ":5173"
+
+# If port is still open, kill the process:
+# On Windows (Git Bash/MinGW):
+taskkill //F //PID <process_id>
+
+# On Linux/Mac:
+kill -9 <process_id>
+
+# Final verification (should return nothing):
+netstat -ano | grep -E ":5173"
+ps aux | grep -i "vite" | grep -v grep
+```
+
+**Why this matters:**
+- Open dev servers are security risks if left unattended
+- Multiple dev servers cause port conflicts
+- Consumes system resources unnecessarily
+
+**Best Practice:**
+- Run dev server only when needed
+- Always verify it's stopped before ending session
+- Use background process management carefully
+
+---
+
 ## Quick Reference
 
 - **Language:** Hebrew (RTL)
@@ -179,6 +217,7 @@ export const IncidentCard: FC<IncidentCardProps> = ({ ... }) => {
 - **Auth:** Supabase + RLS
 - **Photos:** Supabase Storage
 - **Anonymous:** reporter_id = null
+- **Dev Server Port:** 5173 (Vite default)
 
 ---
 

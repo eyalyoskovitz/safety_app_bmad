@@ -105,21 +105,32 @@ Full-stack web application (mobile-first SPA) with Backend-as-a-Service
 ### Selected Stack
 
 **Frontend:**
-- Vite + React 18 + TypeScript
-- MUI (Material UI) for components
-- React Router for navigation
+- React 19.x (latest stable - Dec 2024)
+- TypeScript 5.x
+- Vite 7.x (latest stable - Jun 2025)
+- MUI (Material UI) 7.x (latest stable - Mar 2025)
+- React Router 7.x in Library Mode (v6-compatible API)
 
 **Backend-as-a-Service:**
 - Supabase (PostgreSQL + Auth + Storage)
-- Supabase JS Client SDK
+- Supabase JS Client SDK 2.x
+
+**Version Selection Rationale:**
+> **Note:** This architecture was initially drafted with older versions (React 18, MUI 5, Vite 5, React Router 6). During implementation (Dec 2025), we discovered all these libraries had released stable, production-ready major versions with minimal breaking changes and significant improvements:
+> - React 19 (stable Dec 2024) - Better async handling, React Server Components
+> - MUI 7 (stable Mar 2025) - Better ESM support, improved bundling
+> - Vite 7 (stable Jun 2025) - Faster builds, better HMR
+> - React Router 7 (stable) - Non-breaking in library mode, better TypeScript
+>
+> Decision: Use latest stable versions for better security, performance, and long-term maintainability.
 
 **Initialization Commands:**
 
 ```bash
-# Create frontend
+# Create frontend (uses latest stable versions)
 npm create vite@latest safety-first -- --template react-ts
 cd safety-first
-npm install @mui/material @emotion/react @emotion/styled
+npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 npm install @supabase/supabase-js
 npm install react-router-dom
 ```
@@ -888,10 +899,10 @@ CREATE POLICY "Managers can update assigned incidents" ON incidents
 
 **Decision Compatibility:**
 All technology choices work together seamlessly:
-- Vite + React 18 + TypeScript: Modern, compatible stack
-- MUI + Emotion: Built for React, excellent RTL support
-- Supabase: Provides auth, database, storage in one service
-- React Router: Standard routing for React SPAs
+- Vite 7 + React 19 + TypeScript 5: Latest stable, modern stack
+- MUI 7 + Emotion: Built for React, excellent RTL support, improved ESM
+- Supabase 2.x: Provides auth, database, storage in one service
+- React Router 7 (Library Mode): v6-compatible API, standard routing for React SPAs
 
 **Pattern Consistency:**
 - Naming conventions align with React/TypeScript best practices

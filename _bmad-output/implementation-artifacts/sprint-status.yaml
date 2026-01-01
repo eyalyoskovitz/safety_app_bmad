@@ -1,0 +1,91 @@
+# Sprint Status - Safety First
+# Generated: 2025-12-29
+# Project: safety_app_bmad
+# Tracking System: file-system
+# Story Location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2025-12-29
+project: safety_app_bmad
+project_key: safety_app_bmad
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1: Foundation & Authentication (6 stories)
+  epic-1: done
+  1-1-project-initialization: done
+  1-2-supabase-project-and-database-schema: done
+  1-3-hebrew-rtl-theme-configuration: done
+  1-4-app-shell-with-bottom-navigation: done
+  1-5-user-authentication-login-logout: done
+  1-6-role-based-route-protection: done
+  epic-1-retrospective: optional
+
+  # Epic 2: Incident Reporting (PUBLIC ACCESS) (9 stories)
+  epic-2: backlog
+  2-1-public-report-form-page: backlog
+  2-2-location-selection: backlog
+  2-3-severity-selection: backlog
+  2-4-date-and-time-selection: backlog
+  2-5-description-field: backlog
+  2-6-photo-capture-and-upload: backlog
+  2-7-optional-reporter-name: backlog
+  2-8-form-submission-and-confirmation: backlog
+  2-9-daily-report-limit: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Incident Management (Safety Officer) (6 stories)
+  epic-3: backlog
+  3-1-incident-list-view: backlog
+  3-2-list-sorting-and-filtering: backlog
+  3-3-incident-detail-view: backlog
+  3-4-incident-assignment-workflow: backlog
+  3-5-recent-assignees-quick-select: backlog
+  3-6-new-assignee-selection: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Incident Resolution (Responder) (4 stories)
+  epic-4: backlog
+  4-1-my-assigned-incidents-view: backlog
+  4-2-incident-detail-with-assignment-info: backlog
+  4-3-mark-incident-as-resolved: backlog
+  4-4-resolution-notes: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: User Management (IT Admin) (5 stories)
+  epic-5: backlog
+  5-1-user-list-view: backlog
+  5-2-add-new-user: backlog
+  5-3-role-assignment: backlog
+  5-4-remove-user: backlog
+  5-5-password-reset: backlog
+  epic-5-retrospective: optional
