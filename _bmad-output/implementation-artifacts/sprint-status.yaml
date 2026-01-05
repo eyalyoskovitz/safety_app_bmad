@@ -51,23 +51,23 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Incident Reporting (PUBLIC ACCESS) (9 stories)
-  epic-2: backlog
-  2-1-public-report-form-page: backlog
-  2-2-location-selection: backlog
-  2-3-severity-selection: backlog
-  2-4-date-and-time-selection: backlog
-  2-5-description-field: backlog
-  2-6-photo-capture-and-upload: backlog
-  2-7-optional-reporter-name: backlog
-  2-8-form-submission-and-confirmation: backlog
-  2-9-daily-report-limit: backlog
+  epic-2: done
+  2-1-public-report-form-page: done
+  2-2-location-selection: done
+  2-3-severity-selection: done
+  2-4-date-and-time-selection: done
+  2-5-description-field: done
+  2-6-photo-capture-and-upload: done
+  2-7-optional-reporter-name: done
+  2-8-form-submission-and-confirmation: done
+  2-9-daily-report-limit: done
   epic-2-retrospective: optional
 
   # Epic 3: Incident Management (Safety Officer) (6 stories)
-  epic-3: backlog
-  3-1-incident-list-view: backlog
-  3-2-list-sorting-and-filtering: backlog
-  3-3-incident-detail-view: backlog
+  epic-3: in-progress
+  3-1-incident-list-view: done
+  3-2-list-sorting-and-filtering: review
+  3-3-incident-detail-view: ready-for-dev
   3-4-incident-assignment-workflow: backlog
   3-5-recent-assignees-quick-select: backlog
   3-6-new-assignee-selection: backlog

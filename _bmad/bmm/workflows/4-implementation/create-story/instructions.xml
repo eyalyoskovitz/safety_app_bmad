@@ -16,6 +16,7 @@
   <critical>❓ SAVE QUESTIONS: If you think of questions or clarifications during analysis, save them for the end after the complete story is
     written</critical>
   <critical>🎯 ZERO USER INTERVENTION: Process should be fully automated except for initial epic/story selection or missing documents</critical>
+  <critical>⚡ TOKEN EFFICIENCY: Read files once and reuse, batch operations, create concise essential-only stories, avoid repetition, short sections</critical>
 
   <step n="1" goal="Determine target story">
     <check if="{{story_path}} is provided by user or user provided the epic and story number such as 2-4 or 1.6 or epic 1 story 5">
@@ -259,6 +260,41 @@
   <step n="5" goal="Create comprehensive story file">
     <critical>📝 CREATE ULTIMATE STORY FILE - The developer's master implementation guide!</critical>
 
+    <!-- TOKEN EFFICIENCY MANDATORY ACTIONS - EXECUTE BEFORE WRITING -->
+    <action>⚡ BEFORE WRITING: Apply token efficiency rules</action>
+    <action>Check previous stories in same epic ({{epic_num}}-*) for established patterns</action>
+    <action>Check project-context.md for project-wide rules (RTL, Hebrew, dates, naming, error messages)</action>
+    <action>Check architecture.md for tech stack, database schema, folder structure</action>
+    <action>Decision: REFERENCE these docs instead of repeating their content in story</action>
+    <action>Target: 300-500 lines total, focus ONLY on story-SPECIFIC details</action>
+
+    <efficiency-mandate critical="true">
+      ✅ INCLUDE in story file:
+         - Story-specific acceptance criteria, tasks, Definition of Done
+         - NEW patterns/components not in previous stories (PhotoViewer, useIncident hook, etc.)
+         - Integration points with previous stories (how 3.3 builds on 3.1/3.2)
+         - Critical story-specific gotchas (anonymous display, photo null handling, 404 errors)
+         - Story-specific test cases ONLY (not generic testing checklist)
+
+      ❌ SKIP from story file (REFERENCE instead):
+         - RTL/Hebrew/date formatting rules → "Follow RTL rules from project-context.md"
+         - Architecture details unchanged → "Database schema unchanged (see architecture.md)"
+         - Code patterns from previous stories → "Reuse StatusChip from 3.1 (see file:line)"
+         - Generic test checklists → "Follow standard tests per project-context.md, PLUS: [story-specific tests]"
+         - Repeated naming conventions → "Follow naming conventions from architecture.md"
+    </efficiency-mandate>
+
+    <reference-examples>
+      Instead of: "All components must use marginInlineStart/End instead of marginLeft/Right (50 lines explanation)"
+      Write: "Follow RTL layout rules from project-context.md"
+
+      Instead of: "(Complete StatusChip code example copied from Story 3.1)"
+      Write: "Reuse StatusChip component from 3.1 (see 3-1-incident-list-view.md:244)"
+
+      Instead of: "CREATE TABLE incidents (id UUID...)" (full schema repeated)
+      Write: "Database schema unchanged (see architecture.md lines 642-691)"
+    </reference-examples>
+
     <action>Initialize from template.md:
     {default_output_file}</action>
     <template-output file="{default_output_file}">story_header</template-output>
@@ -269,14 +305,27 @@
 
     <!-- Developer context section - MOST IMPORTANT PART -->
     <template-output file="{default_output_file}">
-    developer_context_section</template-output> **DEV AGENT GUARDRAILS:** <template-output file="{default_output_file}">
+    developer_context_section</template-output>
+    <action>⚡ Token check: Include ONLY story-specific context, reference shared patterns from previous stories</action>
+
+    **DEV AGENT GUARDRAILS:**
+    <template-output file="{default_output_file}">
     technical_requirements</template-output>
+    <action>⚡ Token check: Focus on NEW technical requirements, link to previous stories for established patterns</action>
+
     <template-output file="{default_output_file}">architecture_compliance</template-output>
+    <action>⚡ Token check: Reference architecture.md for unchanged details, include only story-specific architecture notes</action>
+
     <template-output
       file="{default_output_file}">library_framework_requirements</template-output>
+    <action>⚡ Token check: Only NEW libraries/frameworks for this story, not repeating tech stack from architecture.md</action>
+
     <template-output file="{default_output_file}">
     file_structure_requirements</template-output>
+    <action>⚡ Token check: List only NEW files to create, reference existing structure from architecture.md</action>
+
     <template-output file="{default_output_file}">testing_requirements</template-output>
+    <action>⚡ Token check: Story-specific test cases ONLY, reference generic testing standards from project-context.md</action>
 
     <!-- Previous story intelligence -->
     <check
@@ -307,6 +356,56 @@
     <action>Set story Status to: "ready-for-dev"</action>
     <action>Add completion note: "Ultimate
     context engine analysis completed - comprehensive developer guide created"</action>
+  </step>
+
+  <step n="5b" goal="Token Efficiency Final Validation">
+    <critical>⚡ FINAL TOKEN EFFICIENCY REVIEW - Prevent bloated stories!</critical>
+
+    <action>Count lines in created story file: {default_output_file}</action>
+    <action>Calculate story line count</action>
+
+    <check if="line count > 600">
+      <output>⚠️ WARNING: Story file is {line_count} lines (target: 300-500 lines)</output>
+      <output></output>
+      <output>This suggests repetition of content that should be referenced instead.</output>
+      <output></output>
+      <output>Common causes of bloat:</output>
+      <output>  • RTL/Hebrew/date formatting rules repeated (should reference project-context.md)</output>
+      <output>  • Code examples from previous stories copied (should link to story:line)</output>
+      <output>  • Database schema/architecture repeated (should reference architecture.md)</output>
+      <output>  • Generic test checklists detailed (should reference + add story-specific only)</output>
+      <output>  • Technology stack repeated (should reference architecture.md)</output>
+      <output></output>
+      <ask>Options:
+        [c] Continue anyway (I verified no repetition, all content is story-specific)
+        [r] Revise story to remove repetition and add references
+        [q] Quit and review manually
+      </ask>
+
+      <check if="user chooses 'r'">
+        <output>Returning to Step 5 to revise story sections...</output>
+        <action>GOTO step 5</action>
+      </check>
+
+      <check if="user chooses 'q'">
+        <output>Story saved but marked for manual review before dev-story</output>
+        <action>HALT - Manual review required</action>
+      </check>
+
+      <check if="user chooses 'c'">
+        <output>Continuing with story as written (line count: {line_count})</output>
+        <action>Proceed to step 6</action>
+      </check>
+    </check>
+
+    <check if="line count <= 600">
+      <output>✅ Story file size acceptable: {line_count} lines (target: 300-500)</output>
+      <action>Verify story references project-context.md for project-wide rules</action>
+      <action>Verify story references architecture.md for unchanged architecture</action>
+      <action>Verify story references or links to previous stories for established patterns</action>
+      <action>Confirm story focuses on NEW/UNIQUE aspects of this specific story</action>
+      <output>✅ Token efficiency validation passed</output>
+    </check>
   </step>
 
   <step n="6" goal="Update sprint status and finalize">
