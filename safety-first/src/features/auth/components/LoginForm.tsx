@@ -99,6 +99,17 @@ export const LoginForm = () => {
           '& .MuiInputBase-root': {
             minHeight: (theme) => theme.spacing(6), // 48px touch target
           },
+          '& .MuiInputBase-input': {
+            paddingInlineEnd: '8px',
+          },
+          '& .MuiInputLabel-root': {
+            right: 20,
+            left: 'auto',
+            transformOrigin: 'top right',
+          },
+          '& .MuiInputLabel-shrink': {
+            transform: 'translate(2px, -9px) scale(0.75)',
+          },
         }}
       />
 
@@ -118,6 +129,17 @@ export const LoginForm = () => {
         sx={{
           '& .MuiInputBase-root': {
             minHeight: (theme) => theme.spacing(6), // 48px touch target
+          },
+          '& .MuiInputBase-input': {
+            paddingInlineEnd: '8px',
+          },
+          '& .MuiInputLabel-root': {
+            right: 20,
+            left: 'auto',
+            transformOrigin: 'top right',
+          },
+          '& .MuiInputLabel-shrink': {
+            transform: 'translate(2px, -9px) scale(0.75)',
           },
         }}
       />

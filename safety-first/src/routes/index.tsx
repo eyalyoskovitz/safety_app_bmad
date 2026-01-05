@@ -1,8 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './ProtectedRoute'
 import { RoleRoute } from './RoleRoute'
+import { LandingPage } from '../features/home/pages/LandingPage'
 import { IncidentListPage } from '../features/incidents/pages/IncidentListPage'
 import { MyIncidentsPage } from '../features/incidents/pages/MyIncidentsPage'
+import { ReportPage } from '../features/incidents/pages/ReportPage'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { UserManagementPage } from '../features/users/pages/UserManagementPage'
 
@@ -10,12 +12,20 @@ import { UserManagementPage } from '../features/users/pages/UserManagementPage'
  * App Routes Configuration
  *
  * Route Structure:
- * - /login - Login page (public)
+ * ==========================================
+ * PUBLIC ROUTES (no authentication required)
+ * ==========================================
+ * - / - Public incident report form (primary route)
+ * - /report - Public incident report form (alternate route)
+ * - /login - Login page
+ *
+ * ==========================================
+ * PROTECTED ROUTES (authentication required)
+ * ==========================================
  * - /manage/incidents - Main incident list (protected, all authenticated users)
  * - /manage/my-incidents - My assigned incidents (protected, all authenticated users)
  * - /manage/users - User management (protected, IT Admin only)
  * - /manage - Redirects to /manage/incidents
- * - / - Redirects to /manage/incidents (temporary, will be public report form in Epic 2)
  *
  * Protected routes require authentication (enforced by ProtectedRoute component)
  * Role-specific routes use RoleRoute component for role-based access control
@@ -23,11 +33,22 @@ import { UserManagementPage } from '../features/users/pages/UserManagementPage'
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public routes */}
+      {/* ========================================== */}
+      {/* PUBLIC ROUTES (no authentication required) */}
+      {/* ========================================== */}
+
+      {/* Landing page - Primary route */}
+      <Route path="/" element={<LandingPage />} />
+
+      {/* Public report form */}
+      <Route path="/report" element={<ReportPage />} />
+
+      {/* Login page */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Root redirect */}
-      <Route path="/" element={<Navigate to="/manage/incidents" replace />} />
+      {/* ========================================== */}
+      {/* PROTECTED ROUTES (authentication required) */}
+      {/* ========================================== */}
 
       {/* Protected authenticated routes */}
       <Route

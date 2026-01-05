@@ -14,6 +14,20 @@ This file contains critical rules that AI agents MUST follow when implementing c
 
 ---
 
+## CRITICAL: Token Efficiency Rules
+
+**ALWAYS minimize token usage without compromising quality:**
+
+- Read files once, reuse in memory
+- Batch operations (parallel tool calls when possible)
+- Concise responses - ask "need details?" instead of explaining everything
+- Give one recommendation + alternative titles only (not full descriptions)
+- Short status updates, not narratives
+- Load data once, not multiple times
+- Execute in batches, not sequentially unless required
+
+---
+
 ## Technology Stack (Use These Exact Versions)
 
 | Technology | Version | Purpose |

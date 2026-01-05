@@ -148,9 +148,7 @@ This is an internal enterprise safety management system serving ~50 employees at
 | Access Type | Who | What They Can Do | Authentication |
 |-------------|-----|------------------|----------------|
 | **Public** | Anyone with URL | Submit incident reports (named or anonymous) | None required |
-| **Authenticated** | Manager | View assigned incidents, mark resolved | Login required |
-| **Authenticated** | Safety Officer | View all incidents, assign to managers | Login required |
-| **Authenticated** | Plant Manager | View all incidents (read-only) | Login required |
+| **Authenticated** | Manager | View all incidents, assign incidents, mark resolved | Login required |
 | **Authenticated** | IT Admin | Manage user accounts | Login required |
 
 **Security for Public Reporting:**
@@ -239,9 +237,9 @@ Moshe also handles onboarding new employees: adding their email to the system so
 | Journey | User Type | Reveals Requirements For |
 |---------|-----------|-------------------------|
 | **Breaking the Silence** | Yossi (Reporter) | **No login required**, simple mobile form, dropdowns/icons, photo upload, name field or anonymous option, minimal typing |
-| **From Chaos to Control** | Avi (Safety Officer) | **Login required**, daily check routine, incident inbox/list, quick assignment with recent assignees, status tracking |
-| **Owning the Fix** | Dana (Responder) | **Login required**, verbal/WhatsApp handoff (MVP), incident details view, resolution workflow, searchable history (Phase 2) |
-| **Seeing the Patterns** | Ronen (Plant Manager) | **Login required**, dashboard with trends, location/time analytics (Phase 2) |
+| **From Chaos to Control** | Avi (Manager - triage focus) | **Login required**, daily check routine, incident inbox/list, quick assignment with recent assignees, status tracking |
+| **Owning the Fix** | Dana (Manager - resolution focus) | **Login required**, verbal/WhatsApp handoff (MVP), incident details view, resolution workflow, searchable history (Phase 2) |
+| **Seeing the Patterns** | Ronen (Manager - oversight focus) | **Login required**, dashboard with trends, location/time analytics (Phase 2) |
 | **Keeping It Running** | Moshe (IT Admin) | **Login required**, manager account management (not all 50 employees), initial setup, device troubleshooting support |
 
 ---
@@ -413,21 +411,21 @@ Safety First is a **Single Page Application (SPA)** designed as an internal ente
 - FR7: Reporter can optionally enter their name in a text field (leaving blank = anonymous)
 - FR8: [Merged into FR7 - simplified to optional name field]
 - FR9: System confirms successful report submission to the reporter
-- FR9a: System pauses submissions after 15 reports/day with Hebrew message to contact Safety Officer (auto-resets at midnight, configurable via environment variable)
+- FR9a: System pauses submissions after 15 reports/day with Hebrew message to contact manager (auto-resets at midnight, configurable via environment variable)
 
-### Incident Management (Safety Officer - Login Required)
+### Incident Management (Manager - Login Required)
 
-- FR10: Safety Officer can view a list of all reported incidents
-- FR11: Safety Officer can sort the incident list by date (newest/oldest)
-- FR12: Safety Officer can view full details of any incident including photo
-- FR13: Safety Officer can see the current status of each incident (new, assigned, resolved)
-- FR14: Safety Officer can assign an incident to a responsible manager
-- FR15: Safety Officer can select from recently used assignees for quick assignment
-- FR16: Safety Officer can enter a new assignee email address
-- FR17: Safety Officer can view which incidents are pending assignment
-- FR18: Safety Officer can view which incidents have been assigned but not resolved
+- FR10: Manager can view a list of all reported incidents
+- FR11: Manager can sort the incident list by date (newest/oldest)
+- FR12: Manager can view full details of any incident including photo
+- FR13: Manager can see the current status of each incident (new, assigned, resolved)
+- FR14: Manager can assign an incident to a responsible manager
+- FR15: Manager can select from recently used assignees for quick assignment
+- FR16: Manager can enter a new assignee email address
+- FR17: Manager can view which incidents are pending assignment
+- FR18: Manager can view which incidents have been assigned but not resolved
 
-### Incident Resolution (Responder - Login Required)
+### Incident Resolution (Manager - Login Required)
 
 - FR19: Assigned manager can view incidents assigned to them
 - FR20: Assigned manager can view full incident details including photo and assignment info
@@ -438,7 +436,7 @@ Safety First is a **Single Page Application (SPA)** designed as an internal ente
 ### User Management (IT Admin - Login Required)
 
 - FR24: IT Admin can add new manager/admin users to the system (not production line employees)
-- FR25: IT Admin can assign roles to users (Manager, Safety Officer, Plant Manager, IT Admin)
+- FR25: IT Admin can assign roles to users (Manager, IT Admin)
 - FR26: IT Admin can remove users from the system
 - FR27: IT Admin can view list of all users and their roles
 - FR28: IT Admin can reset user passwords if needed
@@ -451,19 +449,17 @@ Safety First is a **Single Page Application (SPA)** designed as an internal ente
 - FR30: System restricts management features based on authenticated user role
 - FR31: Anyone (authenticated or not) can submit incident reports via the public reporting form
 - FR32: [REMOVED - reporters do not have accounts, cannot view history without login]
-- FR33: Managers (authenticated) can view/resolve incidents assigned to them
-- FR34: Safety Officer (authenticated) can view/manage all incidents
-- FR35: Plant Manager (authenticated) can view all incidents and their statuses (read-only)
-- FR36: IT Admin (authenticated) can access user management functions
+- FR33: Managers (authenticated) can view all incidents, assign incidents, and resolve incidents
+- FR34: IT Admin (authenticated) can access user management functions
 
 **Access Model Summary:**
 
 | Feature | Public Access | Authenticated Access |
 |---------|---------------|---------------------|
 | Submit incident report | ✓ Anyone | ✓ Also available |
-| View incident list | ✗ | ✓ Manager+ roles |
-| Assign incidents | ✗ | ✓ Safety Officer |
-| Resolve incidents | ✗ | ✓ Assigned Manager |
+| View incident list | ✗ | ✓ Manager |
+| Assign incidents | ✗ | ✓ Manager |
+| Resolve incidents | ✗ | ✓ Manager |
 | Manage users | ✗ | ✓ IT Admin only |
 
 ### Data Display & Interface

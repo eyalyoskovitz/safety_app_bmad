@@ -45,7 +45,7 @@ export const AppShell = ({ children }: AppShellProps) => {
           paddingInline: 2, // 16px horizontal margins (RTL-aware)
           paddingBlock: 2, // 16px vertical padding
           overflowY: 'auto',
-          // Mobile-first: single-column layout
+          width: '100%',
           maxWidth: '100%',
           // Optional: max width for larger screens
           '@media (min-width: 768px)': {

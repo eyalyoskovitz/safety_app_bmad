@@ -16,7 +16,10 @@
       "Bash(npm run dev:*)",
       "Bash(taskkill //F //PID 14348)",
       "Bash(npm run test:run:*)",
-      "Skill(bmad:bmm:workflows:sprint-status)"
+      "Skill(bmad:bmm:workflows:sprint-status)",
+      "Bash(taskkill:*)",
+      "WebFetch(domain:supabase.com)",
+      "Bash(cat:*)"
     ]
   }
 }

@@ -29,8 +29,9 @@ const theme = createTheme({
     ].join(','),
   },
 
-  // Color Palette (UX Specification)
+  // Color Palette (UX Specification) - Force light mode
   palette: {
+    mode: 'light', // Force light mode (override system dark mode preference)
     primary: {
       main: '#1976D2', // Blue - Actions, links, interactive elements
     },
@@ -134,6 +135,37 @@ const theme = createTheme({
         root: {
           minHeight: 32, // Chips are informational, not primary interactive
           fontSize: 14,
+        },
+      },
+    },
+
+    // TextField - RTL label and notch positioning
+    MuiInputLabel: {
+      styleOverrides: {
+        outlined: {
+          '&:not(.MuiInputLabel-shrink)': {
+            right: 14,
+            left: 'auto',
+            transformOrigin: 'top right',
+          },
+          '&.MuiInputLabel-shrink': {
+            right: 26,
+            left: 'auto',
+            transformOrigin: 'top right',
+          },
+        },
+      },
+    },
+
+    // OutlinedInput - RTL notch positioning
+    MuiOutlinedInput: {
+      styleOverrides: {
+        notchedOutline: {
+          textAlign: 'right',
+          '& legend': {
+            textAlign: 'right',
+            marginRight: 0,
+          },
         },
       },
     },

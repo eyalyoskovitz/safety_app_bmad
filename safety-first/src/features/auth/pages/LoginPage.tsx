@@ -1,4 +1,6 @@
-import { Box, Card, CardContent, Typography } from '@mui/material'
+import { Box, Card, CardContent, Typography, IconButton } from '@mui/material'
+import { Home as HomeIcon } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
 import { LoginForm } from '../components/LoginForm'
 
 /**
@@ -15,6 +17,8 @@ import { LoginForm } from '../components/LoginForm'
  * Used for: Initial login before accessing protected routes
  */
 export const LoginPage = () => {
+  const navigate = useNavigate()
+
   return (
     <Box
       sx={{
@@ -39,6 +43,17 @@ export const LoginPage = () => {
             paddingBlock: 3, // 24px vertical padding
           }}
         >
+          {/* Home Button */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <IconButton
+              onClick={() => navigate('/')}
+              aria-label="חזרה לדף הבית"
+              size="large"
+            >
+              <HomeIcon />
+            </IconButton>
+          </Box>
+
           {/* Title */}
           <Typography
             variant="h4"

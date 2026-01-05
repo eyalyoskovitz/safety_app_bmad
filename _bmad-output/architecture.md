@@ -33,15 +33,15 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 **Functional Requirements:**
 43 requirements across 6 domains:
 - Incident Reporting (FR1-9, FR9a-9b): **PUBLIC ACCESS** - Mobile-friendly form with severity, location, photo, name field or anonymous option, rate limiting
-- Incident Management (FR10-18): **LOGIN REQUIRED** - Safety Officer inbox, assignment workflow, status tracking
-- Incident Resolution (FR19-23): **LOGIN REQUIRED** - Responder view, resolution with notes
+- Incident Management (FR10-18): **LOGIN REQUIRED** - Manager inbox, assignment workflow, status tracking
+- Incident Resolution (FR19-23): **LOGIN REQUIRED** - Manager view, resolution with notes
 - User Management (FR24-28): **LOGIN REQUIRED** - IT Admin manages ~10-15 manager/admin accounts (not all 50 employees)
 - Authentication & Access (FR29-36): Login for managers only, public reporting for all, FR32 removed (no reporter history without login)
 - Data Display (FR37-41): Hebrew RTL, date formats, touch UI, status indicators
 
 **Access Model:**
 - **Public Access (no login):** Anyone can submit incident reports via public URL
-- **Authenticated Access (login required):** Managers, Safety Officer, Plant Manager, IT Admin access management features
+- **Authenticated Access (login required):** Manager, IT Admin access management features
 
 **Non-Functional Requirements:**
 
@@ -227,7 +227,7 @@ src/
 | Access Type | Routes | Who | Authentication |
 |-------------|--------|-----|----------------|
 | **Public** | `/`, `/report` | Anyone with URL | None required |
-| **Authenticated** | `/manage/*` | Managers, Safety Officer, Plant Manager, IT Admin | Login required |
+| **Authenticated** | `/manage/*` | Manager, IT Admin | Login required |
 
 **Role-Based Access: Supabase Row Level Security (RLS)**
 
@@ -235,10 +235,14 @@ Security enforced at the database level for authenticated features only.
 
 | Role | Database Access |
 |------|-----------------|
-| Manager | Assigned incidents only |
-| Safety Officer | All incidents (full CRUD) |
-| Plant Manager | All incidents (read-only) |
+| Manager | All incidents (full CRUD) |
 | IT Admin | All incidents + users table |
+
+**Simplified 2-Role Model for MVP:**
+- **Manager** role consolidates Safety Officer, Plant Manager, and Shift Manager responsibilities
+- All managers can view, assign, and resolve incidents
+- Supports ~10-15 manager accounts (not all 50 employees)
+- Future phases may add role specialization if needed
 
 **Note:** "Reporter" is no longer a database role - anyone can submit via public form without an account.
 
@@ -643,7 +647,7 @@ CREATE TABLE users (
   id UUID PRIMARY KEY REFERENCES auth.users(id),
   email TEXT NOT NULL,
   full_name TEXT,
-  role TEXT NOT NULL DEFAULT 'manager',  -- manager, safety_officer, plant_manager, it_admin
+  role TEXT NOT NULL DEFAULT 'manager',  -- manager, it_admin
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -696,15 +700,11 @@ CREATE POLICY "Anyone can submit incidents" ON incidents
 CREATE POLICY "Authenticated users can view incidents" ON incidents
   FOR SELECT TO authenticated USING (true);
 
--- Safety Officer can UPDATE any incident
-CREATE POLICY "Safety Officer can update incidents" ON incidents
+-- Managers can UPDATE any incident
+CREATE POLICY "Managers can update incidents" ON incidents
   FOR UPDATE TO authenticated USING (
-    EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'safety_officer')
+    EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'manager')
   );
-
--- Managers can UPDATE assigned incidents
-CREATE POLICY "Managers can update assigned incidents" ON incidents
-  FOR UPDATE TO authenticated USING (assigned_to = auth.uid());
 ```
 
 ### Data Flow
@@ -827,9 +827,9 @@ CREATE POLICY "Managers can update assigned incidents" ON incidents
 │ PK  id            UUID  │─────────────────────────────────┐
 │     email         TEXT  │                                 │
 │     full_name     TEXT  │                                 │
-│     role          TEXT  │ (manager/safety_officer/        │
-│                         │  plant_manager/it_admin)        │
-│     created_at TIMESTAMP│  NO "reporter" role - public    │
+│     role          TEXT  │ (manager/it_admin)              │
+│                         │  NO "reporter" role - public    │
+│     created_at TIMESTAMP│                                 │
 │     updated_at TIMESTAMP│                                 │
 └─────────────────────────┘                                 │
                                                             │
