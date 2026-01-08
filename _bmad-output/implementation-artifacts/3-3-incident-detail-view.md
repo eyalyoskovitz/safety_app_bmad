@@ -4,7 +4,7 @@
 
 **Story ID:** 3-3-incident-detail-view
 **Epic:** Epic 3 - Incident Management (Safety Officer)
-**Status:** ready-for-dev
+**Status:** done
 **Priority:** High - Critical for understanding incidents before assignment
 **Sprint:** Sprint 3
 

@@ -41,8 +41,8 @@ This document provides the complete epic and story breakdown for Safety First, d
 - FR12: Safety Officer can view full details of any incident including photo
 - FR13: Safety Officer can see the current status of each incident (new, assigned, resolved)
 - FR14: Safety Officer can assign an incident to a responsible manager
-- FR15: Safety Officer can select from recently used assignees for quick assignment
-- FR16: Safety Officer can enter a new assignee email address
+- FR15: [REMOVED - out of MVP scope]
+- FR16: [REMOVED - out of MVP scope]
 - FR17: Safety Officer can view which incidents are pending assignment
 - FR18: Safety Officer can view which incidents have been assigned but not resolved
 
@@ -162,12 +162,12 @@ This document provides the complete epic and story breakdown for Safety First, d
 | FR12 | Epic 3 | View incident details with photo | Auth |
 | FR13 | Epic 3 | See incident status | Auth |
 | FR14 | Epic 3 | Assign to manager | Auth |
-| FR15 | Epic 3 | Recent assignees quick-select | Auth |
-| FR16 | Epic 3 | Enter new assignee email | Auth |
+| FR15 | - | [REMOVED - out of MVP scope] | - |
+| FR16 | - | [REMOVED - out of MVP scope] | - |
 | FR17 | Epic 3 | View pending assignment | Auth |
 | FR18 | Epic 3 | View assigned but unresolved | Auth |
-| FR19 | Epic 4 | View assigned incidents | Auth |
-| FR20 | Epic 4 | View full details | Auth |
+| FR19 | - | [Removed - no separate My Items view in MVP] | - |
+| FR20 | Epic 4 | View full details with assignment info | Auth |
 | FR21 | Epic 4 | Mark as resolved | Auth |
 | FR22 | Epic 4 | Add resolution notes | Auth |
 | FR23 | - | [Removed - not in MVP scope] | - |
@@ -713,7 +713,7 @@ This epic delivers the core "Snap and Report" functionality - the heart of Safet
 
 **User Outcome:** Avi can see new incidents, assign them to managers, and track status
 
-**FRs Covered:** FR10-FR18, FR34, FR41
+**FRs Covered:** FR10-FR14, FR17-FR18, FR34, FR41
 
 **Epic Overview:**
 This epic delivers the Safety Officer's daily triage workflow - the command center for incident management. Avi logs in each morning, sees new incidents clearly marked, reviews details and photos, assigns them to responsible managers, and tracks progress. The interface uses card-based lists with status indicators (Blue=new, Orange=assigned, Green=resolved) so nothing slips through the cracks. This epic transforms incident reports into actionable assignments.
@@ -874,118 +874,19 @@ This epic delivers the Safety Officer's daily triage workflow - the command cent
 
 ---
 
-#### Story 3.5: Recent Assignees Quick-Select
-
-**As a** Safety Officer,
-**I want** to quickly select from recently used assignees,
-**So that** I can assign incidents faster during daily triage.
-
-**Acceptance Criteria:**
-
-- **Given** the assignment bottom sheet is open
-  **When** I view the options
-  **Then** I see a "לאחרונה" (Recent) section at the top
-  **And** it shows the 5 most recently used assignees
-  **And** each shows their name and role
-
-- **Given** I see the recent assignees list
-  **When** I tap on a recent assignee
-  **Then** the incident is assigned to them immediately
-  **And** the workflow completes (success snackbar, sheet closes)
-
-- **Given** no assignments have been made yet
-  **When** I open the assignment sheet
-  **Then** the recent section is hidden or shows "אין שיוכים אחרונים"
-
-**Definition of Done:**
-- [ ] Recent assignees section in AssignmentSheet
-- [ ] Track recent assignees (local storage or query by `assigned_at`)
-- [ ] Show up to 5 recent assignees
-- [ ] One-tap assignment from recent list
-- [ ] Handle empty state gracefully
-- [ ] FR15 verified
-
----
-
-#### Story 3.6: New Assignee Selection
-
-**As a** Safety Officer,
-**I want** to assign an incident to any manager in the system,
-**So that** I can assign to someone not in my recent list.
-
-**Acceptance Criteria:**
-
-- **Given** the assignment bottom sheet is open
-  **When** I scroll past recent assignees
-  **Then** I see a full list of all managers
-  **And** I can search/filter by name
-
-- **Given** I am viewing the manager list
-  **When** I tap on a manager
-  **Then** the incident is assigned to them
-  **And** they are added to my recent assignees
-
-- **Given** the manager I need is not in the system
-  **When** I cannot find them
-  **Then** I understand I need to contact IT Admin to add them (no inline user creation)
-
-**Definition of Done:**
-- [ ] Full manager list in AssignmentSheet (below recent)
-- [ ] Search/filter input for finding managers
-- [ ] Query users with Manager role from database
-- [ ] Assigned user added to recent list
-- [ ] Clear indication that user management is separate (IT Admin function)
-- [ ] FR16 verified (note: simplified from "enter email" to "select from list" since all managers should be pre-created)
-
----
-
 ### Epic 4: Incident Resolution (Responder - LOGIN REQUIRED)
-**Goal:** Assigned managers can view their incidents and mark them resolved
+**Goal:** Assigned managers can mark incidents resolved with resolution notes, reopen resolved incidents, and all users can see assignee information in list view
 
-**User Outcome:** Dana logs in, sees what's assigned to her, fixes it, and closes the loop
+**User Outcome:** Dana logs in, views the incident list, sees incidents assigned to her, and marks them resolved with notes. She can reopen resolved incidents if issues recur. All users can see who incidents are assigned to and filter by assignee.
 
-**FRs Covered:** FR19-FR22, FR33 (FR32 removed - no reporter accounts)
+**FRs Covered:** FR20-FR22, FR33 (FR19, FR32 removed - no separate My Items view in MVP)
 
 **Epic Overview:**
-This epic delivers the resolution workflow for assigned managers. When Dana logs in, she immediately sees incidents assigned to her in the "My Items" tab. She can view full details including who assigned it and when, then mark it resolved with notes explaining what was done. This epic completes the incident lifecycle from report to resolution, closing the feedback loop.
+This epic delivers the resolution workflow for assigned managers. When Dana logs in, she views the same incident list as other authenticated users, can see which incidents are assigned to her, view full details including who assigned it and when, then mark it resolved with notes explaining what was done. If an issue recurs or wasn't fully addressed, she can reopen the resolved incident to reassign or re-resolve it. Story 4.4 adds assignee visibility and filtering to help all users quickly identify incidents assigned to specific managers. This epic completes the incident lifecycle from report to resolution, closing the feedback loop.
 
 ---
 
-#### Story 4.1: My Assigned Incidents View
-
-**As a** Manager,
-**I want** to see incidents assigned to me,
-**So that** I know what safety issues I need to address.
-
-**Acceptance Criteria:**
-
-- **Given** I am logged in as a Manager
-  **When** I tap the "המשימות שלי" (My Items) tab
-  **Then** I see only incidents assigned to me
-  **And** incidents are displayed as cards (same format as incident list)
-  **And** I see the status (assigned or resolved)
-
-- **Given** I have incidents assigned to me
-  **When** I view My Items
-  **Then** assigned (unresolved) incidents appear first
-  **And** resolved incidents appear below or in separate section
-
-- **Given** I have no incidents assigned to me
-  **When** I view My Items
-  **Then** I see a friendly empty state: "אין משימות משויכות אליך"
-
-**Definition of Done:**
-- [ ] "My Items" tab in bottom navigation
-- [ ] `MyItemsPage` component at `/manage/my-items`
-- [ ] Filter incidents by `assigned_to = current_user.id`
-- [ ] Same card format as incident list
-- [ ] Unresolved shown prominently (sorted to top)
-- [ ] Empty state with Hebrew message
-- [ ] FR19 verified
-
----
-
-#### Story 4.2: Incident Detail with Assignment Info
+#### Story 4.1: Incident Detail with Assignment Info
 
 **As a** Manager viewing an assigned incident,
 **I want** to see full details including assignment information,
@@ -1018,7 +919,7 @@ This epic delivers the resolution workflow for assigned managers. When Dana logs
 
 ---
 
-#### Story 4.3: Mark Incident as Resolved
+#### Story 4.2: Mark Incident as Resolved
 
 **As a** Manager,
 **I want** to mark an incident as resolved,
@@ -1058,7 +959,7 @@ This epic delivers the resolution workflow for assigned managers. When Dana logs
 
 ---
 
-#### Story 4.4: Resolution Notes
+#### Story 4.3: Resolution Notes
 
 **As a** Manager,
 **I want** to add notes when resolving an incident,
@@ -1092,6 +993,105 @@ This epic delivers the resolution workflow for assigned managers. When Dana logs
 - [ ] Notes saved to `resolution_notes` column
 - [ ] Notes displayed on resolved incident detail
 - [ ] FR22 verified
+
+---
+
+#### Story 4.4: Assignee Visibility and Filtering
+
+**As a** Safety Officer or Manager,
+**I want** to see who incidents are assigned to in the list view and filter by assignee,
+**So that** I can quickly find incidents assigned to specific managers.
+
+**Acceptance Criteria:**
+
+- **Given** I am viewing the incident list
+  **When** I look at an incident card
+  **Then** I see the assignee name displayed (if assigned)
+  **And** unassigned incidents show "לא משויך" (Not assigned)
+
+- **Given** I am viewing the incident list
+  **When** I tap the assignee filter ("שיוך")
+  **Then** I see a dropdown with all manager names
+  **And** I see an "הכל" (All) option
+  **And** I can select a specific manager
+
+- **Given** I select a specific manager in the assignee filter
+  **When** the filter is applied
+  **Then** the list shows only incidents assigned to that manager
+  **And** the selected manager name is highlighted in the filter
+
+- **Given** I select "הכל" (All) in the assignee filter
+  **When** the filter is applied
+  **Then** the list shows all incidents regardless of assignment
+
+**Definition of Done:**
+- [ ] Assignee name displayed on incident cards in list view
+- [ ] "לא משויך" shown for unassigned incidents
+- [ ] Assignee filter dropdown added to IncidentListPage
+- [ ] Filter populated with all manager names from users table
+- [ ] Filter includes "הכל" (All) option as default
+- [ ] List filters correctly by selected assignee
+- [ ] Filter state persists during session
+- [ ] Hebrew labels throughout
+
+**Technical Notes:**
+- Fetch users with role 'manager' or 'it_admin' for filter options
+- Assignee name already available from existing joins in getIncidents()
+- Add filter state to IncidentListPage alongside existing status filter
+- Display assignee name on IncidentCard component (below location or status)
+
+---
+
+#### Story 4.5: Reopen Resolved Incident
+
+**As a** Manager or Safety Officer,
+**I want** to reopen a resolved incident,
+**So that** I can reassign it if the issue wasn't fully addressed or recurred.
+
+**Acceptance Criteria:**
+
+- **Given** I am viewing a resolved incident detail page
+  **When** I look at the action buttons area
+  **Then** I see a "פתח מחדש" (Reopen) button in the position where "שיוך" was
+  **And** the "שיוך" button is not visible (incident is resolved)
+
+- **Given** I click the "פתח מחדש" button
+  **When** the action completes successfully
+  **Then** the incident status changes from 'resolved' back to 'assigned'
+  **And** the incident remains assigned to the same user (assigned_to unchanged)
+  **And** resolution details are preserved (resolved_at, resolution_notes remain in database)
+  **And** I see a success snackbar: "האירוע נפתח מחדש"
+
+- **Given** the reopen action fails (network error)
+  **When** the error occurs
+  **Then** I see a red error snackbar in Hebrew
+  **And** the incident remains resolved
+
+- **Given** an incident is reopened
+  **When** I view the detail page
+  **Then** the incident appears as 'assigned' status
+  **And** I see the "שיוך" button (to reassign if needed)
+  **And** I see the "סיום טיפול" button if I'm the assignee
+  **And** the resolution section still shows previous resolution details for reference
+
+**Definition of Done:**
+- [ ] "פתח מחדש" button on resolved incident detail page
+- [ ] Button positioned where "שיוך" button appears for assigned incidents
+- [ ] New API function `reopenIncident()` updates status to 'assigned'
+- [ ] Resolution details preserved (resolved_at, resolution_notes unchanged)
+- [ ] assigned_to remains unchanged (stays assigned to same user)
+- [ ] Success/error snackbars in Hebrew
+- [ ] Incident page shows correct buttons after reopen (שיוך, סיום טיפול)
+- [ ] Resolution section remains visible with historical data
+- [ ] Build passes with no TypeScript errors
+
+**Technical Notes:**
+- Add `reopenIncident(incidentId: string)` to api.ts
+- Update only `status = 'assigned'`, DO NOT modify resolved_at or resolution_notes
+- Add reopen button similar to assign button styling
+- Button visible to all authenticated users (not just assignee)
+- Keep resolution section visible after reopen for historical reference
+- No confirmation dialog needed (simple one-click action)
 
 ---
 
@@ -1301,9 +1301,9 @@ This epic provides IT Admin capabilities to manage the small set of authenticate
 | Epic 1: Foundation & Authentication | 6 | FR29, FR30, FR37, FR38, FR39 |
 | Epic 2: Incident Reporting (Public) | 9 | FR1-FR9, FR9a, FR31, FR40 |
 | Epic 3: Incident Management | 6 | FR10-FR18, FR34, FR41 |
-| Epic 4: Incident Resolution | 4 | FR19-FR22, FR33 |
+| Epic 4: Incident Resolution | 3 | FR20-FR22, FR33 |
 | Epic 5: User Management | 5 | FR24-FR28, FR36 |
-| **Total** | **30** | **All FRs** |
+| **Total** | **29** | **All FRs** |
 
 ### Implementation Order
 

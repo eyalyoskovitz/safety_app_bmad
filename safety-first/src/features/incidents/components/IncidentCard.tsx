@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Box, Chip } from '@mui/material'
+import { Card, CardContent, Typography, Box } from '@mui/material'
 import { CameraAlt as CameraIcon } from '@mui/icons-material'
 import { format } from 'date-fns'
 import type { Incident } from '../types'
@@ -33,59 +33,121 @@ export function IncidentCard({ incident, onClick }: IncidentCardProps) {
         } : undefined,
       }}
     >
-      <CardContent sx={{ width: '100%', p: 2 }}>
+      <CardContent sx={{ width: '100%', p: 1.5 }}>
+        {/* Desktop: Grid layout | Mobile: Flex layout */}
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
             width: '100%',
           }}
         >
-          {/* Top row: Severity and Photo indicator */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <SeverityIndicator severity={incident.severity} />
-            {incident.photo_url && (
-              <Chip
-                icon={<CameraIcon sx={{ marginInlineEnd: '4px !important' }} />}
-                label="תמונה"
-                size="small"
-                variant="outlined"
+          {/* Mobile view: Flex-based layout */}
+          <Box sx={{ display: { xs: 'flex', lg: 'none' }, flexDirection: 'column', gap: 1 }}>
+            {/* Line 1: Date */}
+            <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>
+              {formattedDate}
+            </Typography>
+
+            {/* Line 2: Status, Severity, Assigned, Photo - horizontal */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+              <StatusChip status={incident.status} />
+              <SeverityIndicator severity={incident.severity} />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="caption" color="text.secondary">
+                  משויך ל:
+                </Typography>
+                <Typography variant="caption" fontWeight={500} sx={{ whiteSpace: 'nowrap' }}>
+                  {incident.assigned_user?.full_name || 'לא משויך'}
+                </Typography>
+              </Box>
+              {incident.photo_url && <CameraIcon sx={{ fontSize: 20, color: 'action.active' }} />}
+            </Box>
+
+            {/* Line 3: Description (if exists) */}
+            {incident.description && (
+              <Typography
+                variant="body2"
                 sx={{
-                  fontSize: '0.75rem',
-                  '& .MuiChip-icon': {
-                    marginInlineStart: '8px',
-                    marginInlineEnd: '-4px',
-                  }
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
-              />
+              >
+                {incident.description}
+              </Typography>
             )}
           </Box>
 
-          {/* Date */}
-          <Typography variant="body2" color="text.secondary">
-            {formattedDate}
-          </Typography>
+          {/* Desktop view: Grid-based layout */}
+          <Box
+            sx={{
+              display: { xs: 'none', lg: 'grid' },
+              gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
+              gridTemplateRows: 'auto auto',
+              gap: 1,
+            }}
+          >
+            {/* Row 1: Status | Date | Severity | Assigned | Photo */}
+            <Box sx={{ gridColumn: '1', gridRow: '1', justifySelf: 'start' }}>
+              <StatusChip status={incident.status} />
+            </Box>
 
-          {/* Description preview (if exists) */}
-          {incident.description && (
             <Typography
               variant="body2"
+              color="text.secondary"
               sx={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
+                gridColumn: '2',
+                gridRow: '1',
+                whiteSpace: 'nowrap',
+                justifySelf: 'start',
               }}
             >
-              {incident.description}
+              {formattedDate}
             </Typography>
-          )}
 
-          {/* Status chip */}
-          <Box>
-            <StatusChip status={incident.status} />
+            <Box sx={{ gridColumn: '3', gridRow: '1', justifySelf: 'start' }}>
+              <SeverityIndicator severity={incident.severity} />
+            </Box>
+
+            <Box
+              sx={{
+                gridColumn: '4',
+                gridRow: '1',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                justifySelf: 'start',
+              }}
+            >
+              <Typography variant="caption" color="text.secondary">
+                משויך ל:
+              </Typography>
+              <Typography variant="caption" fontWeight={500} sx={{ whiteSpace: 'nowrap' }}>
+                {incident.assigned_user?.full_name || 'לא משויך'}
+              </Typography>
+            </Box>
+
+            {incident.photo_url && (
+              <Box sx={{ gridColumn: '5', gridRow: '1', justifySelf: 'end' }}>
+                <CameraIcon sx={{ fontSize: 20, color: 'action.active' }} />
+              </Box>
+            )}
+
+            {/* Row 2: Description (if exists) */}
+            {incident.description && (
+              <Typography
+                variant="body2"
+                sx={{
+                  gridColumn: '1 / -1',
+                  gridRow: '2',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  justifySelf: 'start',
+                }}
+              >
+                {incident.description}
+              </Typography>
+            )}
           </Box>
         </Box>
       </CardContent>

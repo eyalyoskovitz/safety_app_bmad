@@ -34,7 +34,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 43 requirements across 6 domains:
 - Incident Reporting (FR1-9, FR9a-9b): **PUBLIC ACCESS** - Mobile-friendly form with severity, location, photo, name field or anonymous option, rate limiting
 - Incident Management (FR10-18): **LOGIN REQUIRED** - Manager inbox, assignment workflow, status tracking
-- Incident Resolution (FR19-23): **LOGIN REQUIRED** - Manager view, resolution with notes
+- Incident Resolution (FR20-22): **LOGIN REQUIRED** - Manager resolution with notes (FR19, FR23 removed)
 - User Management (FR24-28): **LOGIN REQUIRED** - IT Admin manages ~10-15 manager/admin accounts (not all 50 employees)
 - Authentication & Access (FR29-36): Login for managers only, public reporting for all, FR32 removed (no reporter history without login)
 - Data Display (FR37-41): Hebrew RTL, date formats, touch UI, status indicators
@@ -630,7 +630,7 @@ safety-first/
 |---------------------|----------|--------|
 | **FR1-9, FR9a-9b: Incident Reporting** | `src/features/incidents/` | **PUBLIC** |
 | **FR10-18: Incident Management** | `src/features/incidents/` | Authenticated |
-| **FR19-23: Resolution** | `src/features/incidents/components/` | Authenticated |
+| **FR20-22: Resolution** | `src/features/incidents/components/` | Authenticated |
 | **FR24-28: User Management** | `src/features/users/` | Authenticated (IT Admin) |
 | **FR29-36: Authentication** | `src/features/auth/` | Authenticated |
 | **FR37-41: Display/RTL** | `src/theme/` + all components | All |
@@ -920,7 +920,9 @@ All technology choices work together seamlessly:
 |-----------------|--------|------------------------|--------|
 | FR1-9, FR9a-9b: Incident Reporting | ✅ Covered | `features/incidents/IncidentForm` | **PUBLIC** |
 | FR10-18: Incident Management | ✅ Covered | `features/incidents/IncidentList` | Authenticated |
-| FR19-23: Resolution | ✅ Covered | `features/incidents/IncidentDetail` | Authenticated |
+| FR19: My Items View | ⏹️ Removed | N/A - all authenticated users see same list | N/A |
+| FR20-22: Resolution | ✅ Covered | `features/incidents/IncidentDetail` | Authenticated |
+| FR23: Resolution History | ⏹️ Removed | N/A - not in MVP scope | N/A |
 | FR24-28: User Management | ✅ Covered | `features/users/` | Authenticated |
 | FR29-36: Authentication | ✅ Covered | `features/auth/` + Supabase RLS | Authenticated |
 | FR32: Reporter History | ⏹️ Removed | N/A - reporters don't have accounts | N/A |

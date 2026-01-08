@@ -100,15 +100,16 @@ export const LoginForm = () => {
             minHeight: (theme) => theme.spacing(6), // 48px touch target
           },
           '& .MuiInputBase-input': {
-            paddingInlineEnd: '8px',
+            paddingInlineStart: '14px',
+            paddingInlineEnd: '14px',
           },
           '& .MuiInputLabel-root': {
-            right: 20,
+            right: '24px !important',
             left: 'auto',
             transformOrigin: 'top right',
           },
           '& .MuiInputLabel-shrink': {
-            transform: 'translate(2px, -9px) scale(0.75)',
+            transform: 'translate(8px, -9px) scale(0.75) !important',
           },
         }}
       />
@@ -131,15 +132,16 @@ export const LoginForm = () => {
             minHeight: (theme) => theme.spacing(6), // 48px touch target
           },
           '& .MuiInputBase-input': {
-            paddingInlineEnd: '8px',
+            paddingInlineStart: '14px',
+            paddingInlineEnd: '14px',
           },
           '& .MuiInputLabel-root': {
-            right: 20,
+            right: '24px !important',
             left: 'auto',
             transformOrigin: 'top right',
           },
           '& .MuiInputLabel-shrink': {
-            transform: 'translate(2px, -9px) scale(0.75)',
+            transform: 'translate(8px, -9px) scale(0.75) !important',
           },
         }}
       />

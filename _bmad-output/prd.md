@@ -427,11 +427,11 @@ Safety First is a **Single Page Application (SPA)** designed as an internal ente
 
 ### Incident Resolution (Manager - Login Required)
 
-- FR19: Assigned manager can view incidents assigned to them
+- FR19: [REMOVED - Managers view same incident list as IT Admin, no separate "My Items" view needed in MVP]
 - FR20: Assigned manager can view full incident details including photo and assignment info
 - FR21: Assigned manager can mark an incident as resolved
 - FR22: Assigned manager can add resolution notes explaining what was done
-- FR23: Assigned manager can view their resolution history
+- FR23: [REMOVED - Resolution history not in MVP scope]
 
 ### User Management (IT Admin - Login Required)
 

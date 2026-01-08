@@ -63,29 +63,28 @@ development_status:
   2-9-daily-report-limit: done
   epic-2-retrospective: optional
 
-  # Epic 3: Incident Management (Safety Officer) (6 stories)
-  epic-3: in-progress
+  # Epic 3: Incident Management (Safety Officer) (4 stories)
+  epic-3: done
   3-1-incident-list-view: done
-  3-2-list-sorting-and-filtering: review
-  3-3-incident-detail-view: ready-for-dev
-  3-4-incident-assignment-workflow: backlog
-  3-5-recent-assignees-quick-select: backlog
-  3-6-new-assignee-selection: backlog
+  3-2-list-sorting-and-filtering: done
+  3-3-incident-detail-view: done
+  3-4-incident-assignment-workflow: done
   epic-3-retrospective: optional
 
-  # Epic 4: Incident Resolution (Responder) (4 stories)
-  epic-4: backlog
-  4-1-my-assigned-incidents-view: backlog
-  4-2-incident-detail-with-assignment-info: backlog
-  4-3-mark-incident-as-resolved: backlog
-  4-4-resolution-notes: backlog
+  # Epic 4: Incident Resolution (Responder) (5 stories)
+  epic-4: done
+  4-1-incident-detail-with-assignment-info: done
+  4-2-mark-incident-as-resolved: review
+  4-3-resolution-notes: done
+  4-4-assignee-visibility-and-filtering: done
+  4-5-reopen-resolved-incident: review
   epic-4-retrospective: optional
 
   # Epic 5: User Management (IT Admin) (5 stories)
-  epic-5: backlog
-  5-1-user-list-view: backlog
-  5-2-add-new-user: backlog
-  5-3-role-assignment: backlog
+  epic-5: in-progress
+  5-1-user-list-view: done
+  5-2-add-new-user: review
+  5-3-role-assignment: review
   5-4-remove-user: backlog
   5-5-password-reset: backlog
   epic-5-retrospective: optional

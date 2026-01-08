@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import { ReportPage } from './ReportPage'
 import * as api from '../api'
 
@@ -33,7 +34,11 @@ describe('ReportPage', () => {
   })
 
   it('renders the public report form with Hebrew labels', async () => {
-    render(<ReportPage />)
+    render(
+      <MemoryRouter>
+        <ReportPage />
+      </MemoryRouter>
+    )
 
     expect(screen.getByRole('heading', { name: /דיווח אירוע בטיחות/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/מיקום/i)).toBeInTheDocument()
@@ -54,7 +59,11 @@ describe('ReportPage', () => {
     const user = userEvent.setup()
     vi.mocked(api.submitIncident).mockResolvedValue()
 
-    render(<ReportPage />)
+    render(
+      <MemoryRouter>
+        <ReportPage />
+      </MemoryRouter>
+    )
 
     // Wait for locations to load
     await waitFor(() => {
@@ -97,7 +106,11 @@ describe('ReportPage', () => {
     const user = userEvent.setup()
     vi.mocked(api.submitIncident).mockRejectedValue(new Error('אין חיבור לאינטרנט'))
 
-    render(<ReportPage />)
+    render(
+      <MemoryRouter>
+        <ReportPage />
+      </MemoryRouter>
+    )
 
     // Wait for locations to load
     await waitFor(() => {
@@ -123,7 +136,11 @@ describe('ReportPage', () => {
   it('should require location to be selected', async () => {
     const user = userEvent.setup()
 
-    render(<ReportPage />)
+    render(
+      <MemoryRouter>
+        <ReportPage />
+      </MemoryRouter>
+    )
 
     // Wait for locations to load
     await waitFor(() => {
@@ -146,7 +163,11 @@ describe('ReportPage', () => {
   it('should handle location loading error', async () => {
     vi.mocked(api.getActiveLocations).mockRejectedValue(new Error('Network error'))
 
-    render(<ReportPage />)
+    render(
+      <MemoryRouter>
+        <ReportPage />
+      </MemoryRouter>
+    )
 
     // Verify error message
     await waitFor(() => {
@@ -162,7 +183,11 @@ describe('ReportPage', () => {
     const user = userEvent.setup()
     vi.mocked(api.submitIncident).mockResolvedValue()
 
-    render(<ReportPage />)
+    render(
+      <MemoryRouter>
+        <ReportPage />
+      </MemoryRouter>
+    )
 
     // Wait for locations to load
     await waitFor(() => {

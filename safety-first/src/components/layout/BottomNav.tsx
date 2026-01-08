@@ -1,14 +1,15 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material'
 import ListIcon from '@mui/icons-material/List'
-import PersonIcon from '@mui/icons-material/Person'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import { useAuth } from '../../features/auth'
 
 /**
  * BottomNav Component
  *
- * Bottom navigation bar with two tabs:
+ * Bottom navigation bar with tabs:
  * - "רשימה" (List) - Incident list view
- * - "שלי" (My Items) - My assigned incidents
+ * - "משתמשים" (Users) - User management (IT Admin only)
  *
  * Features:
  * - RTL layout (Hebrew right-to-left)
@@ -16,13 +17,18 @@ import PersonIcon from '@mui/icons-material/Person'
  * - Fixed at bottom of screen
  * - Highlights active tab based on current route
  * - Uses React Router for navigation
+ * - Shows User Management tab only for IT Admin
  */
 export const BottomNav = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { role } = useAuth()
+
+  const isITAdmin = role === 'it_admin'
+
   // Derive active tab value from current route (avoid setState-in-effect)
   const value = (() => {
-    if (location.pathname.startsWith('/manage/my-incidents')) return 1
+    if (location.pathname.startsWith('/manage/users')) return 1
     if (location.pathname.startsWith('/manage/incidents') || location.pathname === '/manage') return 0
     return 0
   })()
@@ -33,7 +39,7 @@ export const BottomNav = () => {
     if (newValue === 0) {
       navigate('/manage/incidents')
     } else if (newValue === 1) {
-      navigate('/manage/my-incidents')
+      navigate('/manage/users')
     }
   }
 
@@ -68,12 +74,14 @@ export const BottomNav = () => {
           aria-label="רשימת אירועים"
         />
 
-        {/* My Items Tab */}
-        <BottomNavigationAction
-          label="שלי"
-          icon={<PersonIcon />}
-          aria-label="האירועים שלי"
-        />
+        {/* User Management Tab (IT Admin only) */}
+        {isITAdmin && (
+          <BottomNavigationAction
+            label="משתמשים"
+            icon={<AdminPanelSettingsIcon />}
+            aria-label="ניהול משתמשים"
+          />
+        )}
       </BottomNavigation>
     </Paper>
   )

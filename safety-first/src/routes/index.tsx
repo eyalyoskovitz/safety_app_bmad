@@ -3,10 +3,11 @@ import { ProtectedRoute } from './ProtectedRoute'
 import { RoleRoute } from './RoleRoute'
 import { LandingPage } from '../features/home/pages/LandingPage'
 import { IncidentListPage } from '../features/incidents/pages/IncidentListPage'
+import { IncidentDetailPage } from '../features/incidents/pages/IncidentDetailPage'
 import { MyIncidentsPage } from '../features/incidents/pages/MyIncidentsPage'
 import { ReportPage } from '../features/incidents/pages/ReportPage'
 import { LoginPage } from '../features/auth/pages/LoginPage'
-import { UserManagementPage } from '../features/users/pages/UserManagementPage'
+import { UserListPage } from '../features/users/pages/UserListPage'
 
 /**
  * App Routes Configuration
@@ -66,6 +67,15 @@ export const AppRoutes = () => {
       />
 
       <Route
+        path="/manage/incidents/:id"
+        element={
+          <ProtectedRoute>
+            <IncidentDetailPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/manage/my-incidents"
         element={
           <ProtectedRoute>
@@ -80,7 +90,7 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <RoleRoute allowedRoles={['it_admin']}>
-              <UserManagementPage />
+              <UserListPage />
             </RoleRoute>
           </ProtectedRoute>
         }

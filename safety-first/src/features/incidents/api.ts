@@ -18,11 +18,19 @@ export async function getActiveLocations(): Promise<PlantLocation[]> {
 /**
  * Fetch all incidents for Safety Officer list view
  * Ordered by created_at DESC (newest first)
+ * Includes assigned user details for assignee display and filtering
  */
 export async function getIncidents(): Promise<Incident[]> {
   const { data, error } = await supabase
     .from('incidents')
-    .select('*')
+    .select(`
+      *,
+      assigned_user:users!incidents_assigned_to_fkey (
+        id,
+        full_name,
+        email
+      )
+    `)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -31,6 +39,65 @@ export async function getIncidents(): Promise<Incident[]> {
   }
 
   return data || []
+}
+
+/**
+ * Fetch all manager users for assignee filter
+ * Used to populate assignee filter dropdown
+ * Only returns users with role='manager' (excludes it_admin)
+ */
+export async function getManagers(): Promise<Array<{ id: string; full_name: string }>> {
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, full_name')
+    .eq('role', 'manager')
+    .order('full_name', { ascending: true })
+
+  if (error) {
+    console.error('Failed to fetch managers:', error)
+    throw new Error('שגיאה בטעינת רשימת מנהלים')
+  }
+
+  return data || []
+}
+
+/**
+ * Fetch a single incident by ID for detail view
+ * Includes location name, assigned user, and assigner details via joins
+ */
+export async function getIncidentById(id: string): Promise<Incident> {
+  const { data, error } = await supabase
+    .from('incidents')
+    .select(`
+      *,
+      plant_locations (
+        id,
+        name_he
+      ),
+      assigned_user:users!incidents_assigned_to_fkey (
+        id,
+        full_name,
+        email
+      ),
+      assigner:users!incidents_assigned_by_fkey (
+        id,
+        full_name,
+        email
+      )
+    `)
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    console.error('Failed to fetch incident:', error)
+    throw new Error('שגיאה בטעינת פרטי הדיווח')
+  }
+
+  if (!data) {
+    throw new Error('הדיווח לא נמצא')
+  }
+
+  return data
 }
 
 /**
@@ -106,4 +173,96 @@ export async function submitIncident(formData: IncidentFormData): Promise<void> 
     // Network exceptions from fetch
     throw new Error('אין חיבור לאינטרנט')
   }
+}
+
+/**
+ * Assign an incident to a responsible manager
+ * @param incidentId - The incident ID to assign
+ * @param userId - The user ID to assign to
+ * @returns Updated incident
+ */
+export async function assignIncident(incidentId: string, userId: string): Promise<Incident> {
+  // Get current user (the one assigning)
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { data, error } = await supabase
+    .from('incidents')
+    .update({
+      status: 'assigned',
+      assigned_to: userId,
+      assigned_by: user?.id || null,
+      assigned_at: new Date().toISOString()
+    })
+    .eq('id', incidentId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Failed to assign incident:', error)
+    throw new Error('שגיאה בשיוך האירוע')
+  }
+
+  if (!data) {
+    throw new Error('האירוע לא נמצא')
+  }
+
+  return data
+}
+
+/**
+ * Mark an incident as resolved
+ * @param incidentId - The incident ID to resolve
+ * @param resolutionNotes - Optional notes explaining what was done to resolve the incident
+ * @returns Updated incident
+ */
+export async function resolveIncident(incidentId: string, resolutionNotes?: string): Promise<Incident> {
+  const { data, error } = await supabase
+    .from('incidents')
+    .update({
+      status: 'resolved',
+      resolved_at: new Date().toISOString(),
+      resolution_notes: resolutionNotes || null
+    })
+    .eq('id', incidentId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Failed to resolve incident:', error)
+    throw new Error('שגיאה בעדכון האירוע')
+  }
+
+  if (!data) {
+    throw new Error('האירוע לא נמצא')
+  }
+
+  return data
+}
+
+/**
+ * Reopen a resolved incident back to assigned status
+ * @param incidentId - The incident ID to reopen
+ * @returns Updated incident
+ * @description Changes status from 'resolved' to 'assigned', preserving all resolution history
+ */
+export async function reopenIncident(incidentId: string): Promise<Incident> {
+  const { data, error } = await supabase
+    .from('incidents')
+    .update({
+      status: 'assigned'
+    })
+    .eq('id', incidentId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Failed to reopen incident:', error)
+    throw new Error('שגיאה בפתיחת האירוע מחדש')
+  }
+
+  if (!data) {
+    throw new Error('האירוע לא נמצא')
+  }
+
+  return data
 }
