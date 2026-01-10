@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:ghpages": "tsc -b && GITHUB_PAGES=true vite build",
+    "build:ghpages": "tsc -b && npx cross-env GITHUB_PAGES=true vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
@@ -36,6 +36,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/ui": "^4.0.16",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
