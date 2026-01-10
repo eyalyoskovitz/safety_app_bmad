@@ -1,7 +1,8 @@
 import type { FC } from 'react'
 import { useRef, useState } from 'react'
-import { Button, Box, IconButton, Typography, CircularProgress, Dialog, Alert } from '@mui/material'
+import { Button, Box, IconButton, Typography, CircularProgress, Dialog } from '@mui/material'
 import { CameraAlt, Close } from '@mui/icons-material'
+import { AppAlert } from '../../../components/feedback/AppAlert'
 
 interface PhotoCaptureProps {
   photo: File | null
@@ -157,9 +158,9 @@ export const PhotoCapture: FC<PhotoCaptureProps> = ({
 
       {/* Error message display */}
       {uploadError && (
-        <Alert severity="error" sx={{ mt: 2 }}>
+        <AppAlert severity="error" sx={{ mt: 2 }}>
           {uploadError}
-        </Alert>
+        </AppAlert>
       )}
 
       {/* Fullscreen image dialog */}

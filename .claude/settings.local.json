@@ -19,7 +19,12 @@
       "Skill(bmad:bmm:workflows:sprint-status)",
       "Bash(taskkill:*)",
       "WebFetch(domain:supabase.com)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "SlashCommand(/bmad:bmm:agents:sm)",
+      "SlashCommand(/bmad:bmm:workflows:dev-story)",
+      "Bash(timeout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

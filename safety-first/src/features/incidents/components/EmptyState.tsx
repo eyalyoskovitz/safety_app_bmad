@@ -3,12 +3,13 @@ import { Inbox as InboxIcon } from '@mui/icons-material'
 import type { FC } from 'react'
 
 interface EmptyStateProps {
-  variant?: 'no-incidents' | 'no-results'
+  variant?: 'no-incidents' | 'no-results' | 'no-archived'
 }
 
 const MESSAGES = {
   'no-incidents': 'אין דיווחים במערכת',
   'no-results': 'אין דיווחים בסטטוס זה',
+  'no-archived': 'אין אירועים בארכיון',
 }
 
 /**

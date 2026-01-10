@@ -12,13 +12,13 @@ import {
   InputLabel,
   IconButton,
   InputAdornment,
-  Snackbar,
-  Alert,
   Box,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { createUser } from '../api'
 import { ROLE_LABELS } from '../utils'
+import { AppSnackbar } from '../../../components/feedback/AppSnackbar'
 
 interface UserFormProps {
   open: boolean
@@ -86,6 +86,16 @@ export function UserForm({ open, onClose, onSuccess }: UserFormProps) {
       setPasswordError('הסיסמה חייבת להכיל לפחות 8 תווים')
       return false
     }
+    // Check for spaces
+    if (/\s/.test(value)) {
+      setPasswordError('הסיסמה לא יכולה להכיל רווחים')
+      return false
+    }
+    // Check alphanumeric only (English letters and numbers)
+    if (!/^[a-zA-Z0-9]+$/.test(value)) {
+      setPasswordError('הסיסמה חייבת להכיל רק אותיות באנגלית ומספרים')
+      return false
+    }
     setPasswordError('')
     return true
   }
@@ -96,6 +106,8 @@ export function UserForm({ open, onClose, onSuccess }: UserFormProps) {
       emailRegex.test(email) &&
       fullName.trim().length >= 2 &&
       password.length >= 8 &&
+      !/\s/.test(password) &&  // No spaces
+      /^[a-zA-Z0-9]+$/.test(password) &&  // Alphanumeric only
       !!role
     )
   }
@@ -270,10 +282,11 @@ export function UserForm({ open, onClose, onSuccess }: UserFormProps) {
               }}
               onBlur={() => validatePassword(password)}
               error={!!passwordError}
-              helperText={passwordError}
+              helperText={passwordError || 'לפחות 8 תווים - אותיות באנגלית ומספרים בלבד'}
               required
               fullWidth
               disabled={isSubmitting}
+              dir="ltr"
               sx={{
                 '& .MuiInputLabel-root': {
                   right: '22px !important',
@@ -283,9 +296,11 @@ export function UserForm({ open, onClose, onSuccess }: UserFormProps) {
                   right: '26px !important'
                 }
               }}
-              inputProps={{ dir: 'rtl' }}
+              InputLabelProps={{
+                shrink: password.length > 0 ? true : undefined
+              }}
               InputProps={{
-                endAdornment: (
+                endAdornment: password.length > 0 ? (
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
@@ -295,7 +310,7 @@ export function UserForm({ open, onClose, onSuccess }: UserFormProps) {
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
-                ),
+                ) : null
               }}
             />
           </Box>
@@ -309,35 +324,36 @@ export function UserForm({ open, onClose, onSuccess }: UserFormProps) {
             onClick={handleSubmit}
             variant="contained"
             disabled={isSubmitting || !isFormValid()}
+            startIcon={<PersonAddIcon />}
+            sx={{
+              '& .MuiButton-startIcon': {
+                marginLeft: '12px',
+                marginRight: 0
+              }
+            }}
           >
-            {isSubmitting ? 'שומר...' : 'הוסף משתמש'}
+            {isSubmitting ? 'שומר...' : 'הוסף'}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Success Snackbar */}
-      <Snackbar
+      <AppSnackbar
         open={!!successMessage}
-        autoHideDuration={3000}
+        message={successMessage || ''}
+        severity="success"
         onClose={() => setSuccessMessage(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert severity="success" onClose={() => setSuccessMessage(null)}>
-          {successMessage}
-        </Alert>
-      </Snackbar>
+      />
 
       {/* Error Snackbar */}
-      <Snackbar
+      <AppSnackbar
         open={!!errorMessage}
-        autoHideDuration={6000}
+        message={errorMessage || ''}
+        severity="error"
         onClose={() => setErrorMessage(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert severity="error" onClose={() => setErrorMessage(null)}>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+      />
     </>
   )
 }

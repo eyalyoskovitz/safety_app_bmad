@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material'
 import ListIcon from '@mui/icons-material/List'
+import ArchiveIcon from '@mui/icons-material/Archive'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import { useAuth } from '../../features/auth'
 
@@ -9,6 +10,7 @@ import { useAuth } from '../../features/auth'
  *
  * Bottom navigation bar with tabs:
  * - "רשימה" (List) - Incident list view
+ * - "ארכיון" (Archive) - Archived incidents
  * - "משתמשים" (Users) - User management (IT Admin only)
  *
  * Features:
@@ -27,18 +29,23 @@ export const BottomNav = () => {
   const isITAdmin = role === 'it_admin'
 
   // Derive active tab value from current route (avoid setState-in-effect)
+  // Tab order: 0=List, 1=Archive, 2=Users (IT Admin only)
   const value = (() => {
-    if (location.pathname.startsWith('/manage/users')) return 1
+    if (location.pathname.startsWith('/manage/archive')) return 1
+    if (location.pathname.startsWith('/manage/users')) return isITAdmin ? 2 : 1
     if (location.pathname.startsWith('/manage/incidents') || location.pathname === '/manage') return 0
     return 0
   })()
 
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    // Navigate based on tab selection; value is derived from location.pathname
+    // Navigate based on tab selection
+    // Tab order: 0=List, 1=Archive, 2=Users (IT Admin only)
     if (newValue === 0) {
       navigate('/manage/incidents')
     } else if (newValue === 1) {
+      navigate('/manage/archive')
+    } else if (newValue === 2) {
       navigate('/manage/users')
     }
   }
@@ -72,6 +79,13 @@ export const BottomNav = () => {
           label="רשימה"
           icon={<ListIcon />}
           aria-label="רשימת אירועים"
+        />
+
+        {/* Archive Tab */}
+        <BottomNavigationAction
+          label="ארכיון"
+          icon={<ArchiveIcon />}
+          aria-label="ארכיון אירועים"
         />
 
         {/* User Management Tab (IT Admin only) */}

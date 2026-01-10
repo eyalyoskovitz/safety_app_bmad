@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Snackbar, Alert, Stack, IconButton, Typography } from '@mui/material'
+import { Box, CircularProgress, Stack, IconButton, Typography } from '@mui/material'
 import { Refresh as RefreshIcon } from '@mui/icons-material'
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -10,6 +10,7 @@ import { EmptyState } from '../components/EmptyState'
 import { SortControl } from '../components/SortControl'
 import { FilterControl } from '../components/FilterControl'
 import { AssigneeFilter } from '../components/AssigneeFilter'
+import { AppSnackbar } from '../../../components/feedback/AppSnackbar'
 
 const SCROLL_POSITION_KEY = 'incident-list-scroll-position'
 
@@ -179,15 +180,12 @@ export function IncidentListPage() {
 
       {/* Error snackbar */}
       {error && (
-        <Snackbar
+        <AppSnackbar
           open={showError}
+          message={error}
+          severity="error"
           onClose={handleCloseError}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
-            {error}
-          </Alert>
-        </Snackbar>
+        />
       )}
 
       {/* Empty state - no incidents at all */}

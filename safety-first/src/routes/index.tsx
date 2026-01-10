@@ -5,6 +5,7 @@ import { LandingPage } from '../features/home/pages/LandingPage'
 import { IncidentListPage } from '../features/incidents/pages/IncidentListPage'
 import { IncidentDetailPage } from '../features/incidents/pages/IncidentDetailPage'
 import { MyIncidentsPage } from '../features/incidents/pages/MyIncidentsPage'
+import { ArchiveListPage } from '../features/incidents/pages/ArchiveListPage'
 import { ReportPage } from '../features/incidents/pages/ReportPage'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { UserListPage } from '../features/users/pages/UserListPage'
@@ -25,6 +26,7 @@ import { UserListPage } from '../features/users/pages/UserListPage'
  * ==========================================
  * - /manage/incidents - Main incident list (protected, all authenticated users)
  * - /manage/my-incidents - My assigned incidents (protected, all authenticated users)
+ * - /manage/archive - Archived incidents (protected, all authenticated users)
  * - /manage/users - User management (protected, IT Admin only)
  * - /manage - Redirects to /manage/incidents
  *
@@ -80,6 +82,15 @@ export const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <MyIncidentsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/manage/archive"
+        element={
+          <ProtectedRoute>
+            <ArchiveListPage />
           </ProtectedRoute>
         }
       />

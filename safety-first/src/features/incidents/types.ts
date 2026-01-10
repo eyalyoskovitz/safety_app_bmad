@@ -1,5 +1,5 @@
 export type Severity = 'unknown' | 'near-miss' | 'minor' | 'major' | 'critical'
-export type IncidentStatus = 'new' | 'assigned' | 'resolved'
+export type IncidentStatus = 'new' | 'assigned' | 'resolved' | 'archived'
 
 export interface PlantLocation {
   id: string           // UUID
@@ -23,6 +23,9 @@ export interface Incident extends IncidentFormData {
   assigned_at: string | null
   resolution_notes: string | null
   resolved_at: string | null
+  archived_at: string | null          // When incident was archived
+  archived_by: string | null          // UUID - who archived it
+  archive_reason: string | null       // Optional reason for archiving
   created_at: string
   updated_at: string
   // Joined data from Supabase queries

@@ -38,9 +38,9 @@ export function UserCard({ user, onClick }: UserCardProps) {
       <CardContent sx={{ width: '100%', p: 1.5 }}>
         <Box sx={{ width: '100%' }}>
           {/* Mobile view: Vertical layout */}
-          <Box sx={{ display: { xs: 'flex', lg: 'none' }, flexDirection: 'column', gap: 1 }}>
+          <Box sx={{ display: { xs: 'flex', lg: 'none' }, flexDirection: 'column', gap: 0.5 }}>
             {/* User Name */}
-            <Typography variant="h6" component="h2">
+            <Typography variant="body1" component="h2" fontWeight={600}>
               {user.full_name || user.email}
             </Typography>
 
@@ -74,8 +74,9 @@ export function UserCard({ user, onClick }: UserCardProps) {
           >
             {/* Column 1: Name */}
             <Typography
-              variant="h6"
+              variant="body1"
               component="h2"
+              fontWeight={600}
               sx={{
                 gridColumn: '1',
                 overflow: 'hidden',

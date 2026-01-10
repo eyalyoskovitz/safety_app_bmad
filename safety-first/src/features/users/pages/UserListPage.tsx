@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { Container, Typography, Box, CircularProgress, Alert, IconButton, Button } from '@mui/material'
+import { Container, Typography, Box, CircularProgress, IconButton, Button } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import AddIcon from '@mui/icons-material/Add'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { useUsers } from '../hooks/useUsers'
 import { UserCard } from '../components/UserCard'
 import { UserForm } from '../components/UserForm'
 import { UserEditDialog } from '../components/UserEditDialog'
+import { AppAlert } from '../../../components/feedback/AppAlert'
 import type { User } from '../types'
 
 /**
@@ -58,11 +59,16 @@ export function UserListPage() {
         </Typography>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={<PersonAddIcon />}
           onClick={() => setIsFormOpen(true)}
-          sx={{ gap: 1 }}
+          sx={{
+            '& .MuiButton-startIcon': {
+              marginLeft: '12px',
+              marginRight: 0
+            }
+          }}
         >
-          הוסף משתמש
+          הוסף
         </Button>
       </Box>
 
@@ -82,16 +88,16 @@ export function UserListPage() {
 
       {/* Error State */}
       {error && !isLoading && (
-        <Alert severity="error" sx={{ marginBlockEnd: 2 }}>
+        <AppAlert severity="error" sx={{ marginBlockEnd: 2 }}>
           {error}
-        </Alert>
+        </AppAlert>
       )}
 
       {/* Empty State */}
       {!isLoading && !error && users.length === 0 && (
-        <Alert severity="info">
+        <AppAlert severity="info">
           לא נמצאו משתמשים במערכת
-        </Alert>
+        </AppAlert>
       )}
 
       {/* Users List */}

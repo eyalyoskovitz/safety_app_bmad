@@ -4,11 +4,11 @@ import {
   Box,
   TextField,
   Button,
-  Alert,
   CircularProgress,
 } from '@mui/material'
 import { useAuth } from '../hooks/useAuth'
 import { getHebrewErrorMessage } from '../api'
+import { AppAlert } from '../../../components/feedback/AppAlert'
 
 /**
  * LoginForm Component
@@ -77,9 +77,9 @@ export const LoginForm = () => {
     >
       {/* Error message */}
       {error && (
-        <Alert severity="error" onClose={() => setError(null)}>
+        <AppAlert severity="error" onClose={() => setError(null)}>
           {error}
-        </Alert>
+        </AppAlert>
       )}
 
       {/* Email field */}

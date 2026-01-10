@@ -19,6 +19,7 @@ export async function getActiveLocations(): Promise<PlantLocation[]> {
  * Fetch all incidents for Safety Officer list view
  * Ordered by created_at DESC (newest first)
  * Includes assigned user details for assignee display and filtering
+ * Excludes archived incidents from the main list
  */
 export async function getIncidents(): Promise<Incident[]> {
   const { data, error } = await supabase
@@ -31,11 +32,39 @@ export async function getIncidents(): Promise<Incident[]> {
         email
       )
     `)
+    .neq('status', 'archived')
     .order('created_at', { ascending: false })
 
   if (error) {
     console.error('Failed to fetch incidents:', error)
     throw new Error('שגיאה בטעינת הדיווחים')
+  }
+
+  return data || []
+}
+
+/**
+ * Fetch all archived incidents for Archive page
+ * Ordered by archived_at DESC (most recently archived first)
+ * Includes assigned user details
+ */
+export async function getArchivedIncidents(): Promise<Incident[]> {
+  const { data, error } = await supabase
+    .from('incidents')
+    .select(`
+      *,
+      assigned_user:users!incidents_assigned_to_fkey (
+        id,
+        full_name,
+        email
+      )
+    `)
+    .eq('status', 'archived')
+    .order('archived_at', { ascending: false })
+
+  if (error) {
+    console.error('Failed to fetch archived incidents:', error)
+    throw new Error('שגיאה בטעינת הארכיון')
   }
 
   return data || []
@@ -64,6 +93,7 @@ export async function getManagers(): Promise<Array<{ id: string; full_name: stri
 /**
  * Fetch a single incident by ID for detail view
  * Includes location name, assigned user, and assigner details via joins
+ * Note: archiver is fetched separately to avoid FK constraint issues
  */
 export async function getIncidentById(id: string): Promise<Incident> {
   const { data, error } = await supabase
@@ -95,6 +125,19 @@ export async function getIncidentById(id: string): Promise<Incident> {
 
   if (!data) {
     throw new Error('הדיווח לא נמצא')
+  }
+
+  // Fetch archiver details separately if archived_by exists
+  if (data.archived_by) {
+    const { data: archiverData } = await supabase
+      .from('users')
+      .select('id, full_name, email')
+      .eq('id', data.archived_by)
+      .single()
+
+    if (archiverData) {
+      ;(data as any).archiver = archiverData
+    }
   }
 
   return data
@@ -258,6 +301,71 @@ export async function reopenIncident(incidentId: string): Promise<Incident> {
   if (error) {
     console.error('Failed to reopen incident:', error)
     throw new Error('שגיאה בפתיחת האירוע מחדש')
+  }
+
+  if (!data) {
+    throw new Error('האירוע לא נמצא')
+  }
+
+  return data
+}
+
+/**
+ * Archive an incident (IT Admin only)
+ * @param incidentId - The incident ID to archive
+ * @param reason - Optional reason for archiving
+ * @returns Updated incident
+ * @description Changes status to 'archived' and records who archived it and when
+ */
+export async function archiveIncident(incidentId: string, reason?: string): Promise<Incident> {
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { data, error } = await supabase
+    .from('incidents')
+    .update({
+      status: 'archived',
+      archived_at: new Date().toISOString(),
+      archived_by: user?.id || null,
+      archive_reason: reason || null
+    })
+    .eq('id', incidentId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Failed to archive incident:', error)
+    throw new Error('שגיאה בהעברה לארכיון')
+  }
+
+  if (!data) {
+    throw new Error('האירוע לא נמצא')
+  }
+
+  return data
+}
+
+/**
+ * Restore an archived incident (IT Admin only)
+ * @param incidentId - The incident ID to restore
+ * @returns Updated incident
+ * @description Changes status from 'archived' back to 'new' and clears archive metadata
+ */
+export async function restoreIncident(incidentId: string): Promise<Incident> {
+  const { data, error } = await supabase
+    .from('incidents')
+    .update({
+      status: 'new',
+      archived_at: null,
+      archived_by: null,
+      archive_reason: null
+    })
+    .eq('id', incidentId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Failed to restore incident:', error)
+    throw new Error('שגיאה בשחזור האירוע')
   }
 
   if (!data) {

@@ -85,6 +85,14 @@ development_status:
   5-1-user-list-view: done
   5-2-add-new-user: review
   5-3-role-assignment: review
-  5-4-remove-user: backlog
-  5-5-password-reset: backlog
+  5-4-remove-user: done
+  5-5-password-reset: done
   epic-5-retrospective: optional
+
+  # Epic 6: Incident Archiving (IT Admin) (4 stories)
+  epic-6: done
+  6-1-archive-incident: done
+  6-2-restore-incident: done
+  6-3-archive-page: done
+  6-4-archive-audit-display: done
+  epic-6-retrospective: optional

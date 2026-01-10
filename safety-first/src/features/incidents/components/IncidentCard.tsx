@@ -52,10 +52,10 @@ export function IncidentCard({ incident, onClick }: IncidentCardProps) {
               <StatusChip status={incident.status} />
               <SeverityIndicator severity={incident.severity} />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="body2" color="text.secondary">
                   משויך ל:
                 </Typography>
-                <Typography variant="caption" fontWeight={500} sx={{ whiteSpace: 'nowrap' }}>
+                <Typography variant="body2" fontWeight={500} sx={{ whiteSpace: 'nowrap' }}>
                   {incident.assigned_user?.full_name || 'לא משויך'}
                 </Typography>
               </Box>
@@ -118,10 +118,10 @@ export function IncidentCard({ incident, onClick }: IncidentCardProps) {
                 justifySelf: 'start',
               }}
             >
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="body2" color="text.secondary">
                 משויך ל:
               </Typography>
-              <Typography variant="caption" fontWeight={500} sx={{ whiteSpace: 'nowrap' }}>
+              <Typography variant="body2" fontWeight={500} sx={{ whiteSpace: 'nowrap' }}>
                 {incident.assigned_user?.full_name || 'לא משויך'}
               </Typography>
             </Box>
@@ -132,12 +132,12 @@ export function IncidentCard({ incident, onClick }: IncidentCardProps) {
               </Box>
             )}
 
-            {/* Row 2: Description (if exists) */}
+            {/* Row 2: Description (if exists) - aligned with second column */}
             {incident.description && (
               <Typography
                 variant="body2"
                 sx={{
-                  gridColumn: '1 / -1',
+                  gridColumn: '2 / -1',
                   gridRow: '2',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',

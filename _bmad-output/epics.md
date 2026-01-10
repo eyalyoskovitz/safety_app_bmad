@@ -1292,6 +1292,194 @@ This epic provides IT Admin capabilities to manage the small set of authenticate
 
 ---
 
+### Epic 6: Incident Archiving (IT Admin - LOGIN REQUIRED)
+**Goal:** IT Admin can archive incidents that were added by mistake, are redundant, fraudulent, or no longer relevant, and restore them if needed
+
+**User Outcome:** Moshe (IT Admin) can archive incidents to remove them from the main list, view all archived incidents in a dedicated page, and restore archived incidents if they were archived by mistake. All authenticated users can view the archive for transparency.
+
+**FRs Covered:** FR-ARCHIVE-1 to FR-ARCHIVE-6 (new functionality not in original PRD)
+
+**Epic Overview:**
+This epic adds incident archiving capabilities to maintain a clean incident list while preserving historical data. IT Admins can archive incidents that shouldn't be in the active workflow (duplicates, test entries, mistakes, or resolved incidents that need to be hidden). Archived incidents are moved to a dedicated Archive page accessible to all authenticated users for transparency. IT Admins can restore archived incidents if needed. Archive metadata (who archived, when, why) is tracked for audit purposes.
+
+**Note:** Archiving is a soft-delete - incidents remain in the database but are excluded from the main incident list. Only IT Admins can archive/restore; all authenticated users can view the archive.
+
+---
+
+#### Functional Requirements (New - Epic 6)
+
+**Incident Archiving (FR-ARCHIVE-1 to FR-ARCHIVE-6):**
+- FR-ARCHIVE-1: IT Admin can archive any incident from the incident detail page
+- FR-ARCHIVE-2: IT Admin can optionally provide a reason when archiving
+- FR-ARCHIVE-3: Archived incidents are excluded from the main incident list
+- FR-ARCHIVE-4: All authenticated users can view archived incidents in a dedicated Archive page
+- FR-ARCHIVE-5: IT Admin can restore archived incidents back to active status
+- FR-ARCHIVE-6: Archive metadata (archived_at, archived_by, archive_reason) is tracked
+
+#### Non-Functional Requirements (Epic 6)
+
+- NFR-ARCHIVE-1: Archive action should complete in under 2 seconds
+- NFR-ARCHIVE-2: Archive page should load in under 2 seconds
+- NFR-ARCHIVE-3: Archive metadata must be preserved for audit purposes
+
+---
+
+#### Story 6.1: Archive Incident
+
+**As an** IT Admin,
+**I want** to archive incidents that are no longer relevant,
+**So that** I can keep the main incident list clean and focused on active issues.
+
+**Acceptance Criteria:**
+
+- **Given** I am logged in as IT Admin
+  **When** I view any incident detail page
+  **Then** I see an "ארכיון" (Archive) button
+  **And** the button is NOT visible to non-admin users (Manager, Safety Officer)
+
+- **Given** I tap the "ארכיון" button
+  **When** the archive dialog opens
+  **Then** I see an optional text field for archive reason
+  **And** I see Hebrew placeholder: "סיבת ארכוב (לא חובה)"
+
+- **Given** I confirm the archive action
+  **When** the action completes successfully
+  **Then** the incident status changes to 'archived'
+  **And** the `archived_at` timestamp is set
+  **And** the `archived_by` field is set to my user ID
+  **And** the `archive_reason` field is set (if provided)
+  **And** I see a success snackbar: "האירוע הועבר לארכיון"
+  **And** I am navigated back to the incident list
+
+- **Given** the archive action fails (network error)
+  **When** the error occurs
+  **Then** I see a red error snackbar in Hebrew
+  **And** the incident remains in its previous status
+
+**Definition of Done:**
+- [x] Archive button on incident detail page (IT Admin only)
+- [x] ArchiveDialog component with optional reason field
+- [x] New API function `archiveIncident(incidentId, reason?)` in api.ts
+- [x] Incident status set to 'archived'
+- [x] Archive metadata saved (archived_at, archived_by, archive_reason)
+- [x] Success/error snackbars in Hebrew
+- [x] Build passes with no TypeScript errors
+
+---
+
+#### Story 6.2: Restore Incident
+
+**As an** IT Admin,
+**I want** to restore archived incidents back to active status,
+**So that** incidents archived by mistake can be recovered.
+
+**Acceptance Criteria:**
+
+- **Given** I am viewing an archived incident detail page
+  **When** I am logged in as IT Admin
+  **Then** I see a "שחזור" (Restore) button
+  **And** the button is NOT visible to non-admin users (Manager, Safety Officer)
+
+- **Given** I click the "שחזור" button
+  **When** the action completes successfully
+  **Then** the incident status changes from 'archived' back to 'new'
+  **And** the archive metadata is cleared (archived_at, archived_by, archive_reason set to null)
+  **And** I see a success snackbar: "האירוע שוחזר בהצלחה"
+  **And** the page refreshes to show the restored incident
+
+- **Given** the restore action fails (network error)
+  **When** the error occurs
+  **Then** I see a red error snackbar in Hebrew
+  **And** the incident remains archived
+
+**Definition of Done:**
+- [x] Restore button on archived incident detail page (IT Admin only)
+- [x] New API function `restoreIncident(incidentId)` in api.ts
+- [x] Incident restored to 'new' status
+- [x] Archive metadata cleared
+- [x] Success/error snackbars in Hebrew
+- [x] Build passes with no TypeScript errors
+
+---
+
+#### Story 6.3: Archive Page
+
+**As an** authenticated user,
+**I want** to view archived incidents in a dedicated page,
+**So that** I can see which incidents have been archived and access their details.
+
+**Acceptance Criteria:**
+
+- **Given** I am logged in as any authenticated user
+  **When** I view the bottom navigation
+  **Then** I see an "ארכיון" (Archive) tab with an Archive icon
+  **And** the tab is positioned between "רשימה" (List) and "משתמשים" (Users)
+
+- **Given** I tap on the "ארכיון" tab
+  **When** the navigation completes
+  **Then** I am taken to the Archive page at `/manage/archive`
+  **And** I see a list of archived incidents
+
+- **Given** I am on the Archive page
+  **When** the page loads
+  **Then** I see all archived incidents displayed as cards
+  **And** each card shows: severity (colored indicator), location, date, status chip ("בארכיון")
+  **And** the list is sorted by archived date (newest first)
+
+- **Given** I tap on an archived incident card
+  **When** I navigate to the detail page
+  **Then** I see the archived incident details
+  **And** I see archive information (archived date, archived by, reason)
+  **And** I see the "שחזור" button if I am IT Admin
+
+- **Given** there are no archived incidents
+  **When** I view the Archive page
+  **Then** I see a friendly empty state message: "אין אירועים בארכיון"
+
+**Definition of Done:**
+- [x] Archive tab added to bottom navigation
+- [x] New `ArchiveListPage` component at `/manage/archive`
+- [x] New `getArchivedIncidents()` API function
+- [x] Archive page shows incidents with status='archived'
+- [x] Empty state with Hebrew message
+- [x] Clicking card navigates to detail page
+- [x] Build passes with no TypeScript errors
+
+---
+
+#### Story 6.4: Archive Audit Display
+
+**As an** authenticated user (IT Admin or Manager),
+**I want** to see archive information on archived incident details,
+**So that** I can see who archived the incident, when, and why.
+
+**Acceptance Criteria:**
+
+- **Given** I am viewing an archived incident detail page
+  **When** the page loads
+  **Then** I see an "ארכיון" (Archive) section with:
+    - תאריך ארכוב (Archive Date) - formatted as DD/MM/YYYY HH:mm
+    - ארכוב על ידי (Archived By) - name of the user who archived it
+    - סיבת ארכוב (Archive Reason) - if provided
+
+- **Given** the incident was archived without a reason
+  **When** I view the archive section
+  **Then** the reason field is not shown
+
+- **Given** the incident is not archived
+  **When** I view the incident detail page
+  **Then** the archive section is not shown
+
+**Definition of Done:**
+- [x] Archive section added to incident detail page
+- [x] Shows archive metadata (date, user, reason)
+- [x] Archiver name fetched from users table
+- [x] Section only visible for archived incidents
+- [x] Hebrew labels throughout
+- [x] Build passes with no TypeScript errors
+
+---
+
 ## Summary
 
 ### Story Count by Epic
@@ -1301,9 +1489,10 @@ This epic provides IT Admin capabilities to manage the small set of authenticate
 | Epic 1: Foundation & Authentication | 6 | FR29, FR30, FR37, FR38, FR39 |
 | Epic 2: Incident Reporting (Public) | 9 | FR1-FR9, FR9a, FR31, FR40 |
 | Epic 3: Incident Management | 6 | FR10-FR18, FR34, FR41 |
-| Epic 4: Incident Resolution | 3 | FR20-FR22, FR33 |
+| Epic 4: Incident Resolution | 5 | FR20-FR22, FR33 |
 | Epic 5: User Management | 5 | FR24-FR28, FR36 |
-| **Total** | **29** | **All FRs** |
+| Epic 6: Incident Archiving | 4 | FR-ARCHIVE-1 to FR-ARCHIVE-6 |
+| **Total** | **35** | **All FRs** |
 
 ### Implementation Order
 

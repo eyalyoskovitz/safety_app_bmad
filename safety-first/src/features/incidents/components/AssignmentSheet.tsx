@@ -7,13 +7,13 @@ import {
   Card,
   CardContent,
   CircularProgress,
-  Alert,
   TextField,
   InputAdornment
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { useUsers } from '../../users/hooks/useUsers'
 import { assignIncident } from '../api'
+import { AppAlert } from '../../../components/feedback/AppAlert'
 
 interface AssignmentSheetProps {
   open: boolean
@@ -96,27 +96,27 @@ export const AssignmentSheet: FC<AssignmentSheetProps> = ({
         )}
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <AppAlert severity="error" sx={{ mb: 2 }}>
             {error}
-          </Alert>
+          </AppAlert>
         )}
 
         {assignError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <AppAlert severity="error" sx={{ mb: 2 }}>
             {assignError}
-          </Alert>
+          </AppAlert>
         )}
 
         {!isLoading && !error && users.length === 0 && (
-          <Alert severity="warning" sx={{ mb: 2 }}>
+          <AppAlert severity="warning" sx={{ mb: 2 }}>
             לא נמצאו מנהלים במערכת. יש להוסיף משתמשים עם תפקיד "מנהל" דרך ניהול משתמשים.
-          </Alert>
+          </AppAlert>
         )}
 
         {!isLoading && !error && users.length > 0 && filteredUsers.length === 0 && (
-          <Alert severity="info" sx={{ mb: 2 }}>
+          <AppAlert severity="info" sx={{ mb: 2 }}>
             לא נמצאו תוצאות לחיפוש "{searchText}"
-          </Alert>
+          </AppAlert>
         )}
 
         {!isLoading && !error && filteredUsers.length > 0 && (

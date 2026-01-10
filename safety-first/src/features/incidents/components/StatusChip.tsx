@@ -10,13 +10,15 @@ const STATUS_LABELS: Record<IncidentStatus, string> = {
   new: 'חדש',
   assigned: 'משוייך',
   resolved: 'טופל',
+  archived: 'בארכיון',
 }
 
 // MUI theme colors for status (semantic colors per UX spec)
-const STATUS_COLORS: Record<IncidentStatus, 'primary' | 'warning' | 'success'> = {
+const STATUS_COLORS: Record<IncidentStatus, 'primary' | 'warning' | 'success' | 'default'> = {
   new: 'primary',      // Blue
   assigned: 'warning',  // Orange
   resolved: 'success',  // Green
+  archived: 'default',  // Grey
 }
 
 /**

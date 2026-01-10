@@ -10,13 +10,13 @@ import {
   CircularProgress,
   Stack,
   Divider,
-  Alert,
   Button,
-  Snackbar,
 } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import ImageIcon from '@mui/icons-material/Image'
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'
+import ArchiveIcon from '@mui/icons-material/Archive'
+import UnarchiveIcon from '@mui/icons-material/Unarchive'
 import { format } from 'date-fns'
 import { useIncident } from '../hooks/useIncident'
 import { useAuth } from '../../auth/hooks/useAuth'
@@ -25,18 +25,24 @@ import { SeverityIndicator } from '../components/SeverityIndicator'
 import { PhotoViewer } from '../components/PhotoViewer'
 import { AssignmentSheet } from '../components/AssignmentSheet'
 import { ResolutionDialog } from '../components/ResolutionDialog'
-import { resolveIncident, reopenIncident } from '../api'
+import { ArchiveDialog } from '../components/ArchiveDialog'
+import { resolveIncident, reopenIncident, archiveIncident, restoreIncident } from '../api'
+import { AppSnackbar } from '../../../components/feedback/AppSnackbar'
+import { AppAlert } from '../../../components/feedback/AppAlert'
 
 export const IncidentDetailPage: FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, role } = useAuth()
   const { incident, isLoading, error, refetch } = useIncident(id || '')
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [showResolveDialog, setShowResolveDialog] = useState(false)
   const [isResolving, setIsResolving] = useState(false)
   const [resolutionNotes, setResolutionNotes] = useState('')
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false)
+  const [isArchiving, setIsArchiving] = useState(false)
+  const [archiveReason, setArchiveReason] = useState('')
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -99,6 +105,53 @@ export const IncidentDetailPage: FC = () => {
     }
   }
 
+  const handleArchive = async () => {
+    if (!incident) return
+
+    setIsArchiving(true)
+    try {
+      await archiveIncident(incident.id, archiveReason)
+      setShowArchiveDialog(false)
+      setArchiveReason('')
+      setSnackbar({
+        open: true,
+        message: 'האירוע הועבר לארכיון',
+        severity: 'success'
+      })
+      // Navigate back to incident list
+      navigate('/manage/incidents')
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'שגיאה בהעברה לארכיון. נסה שוב',
+        severity: 'error'
+      })
+    } finally {
+      setIsArchiving(false)
+    }
+  }
+
+  const handleRestore = async () => {
+    if (!incident) return
+
+    try {
+      await restoreIncident(incident.id)
+      setSnackbar({
+        open: true,
+        message: 'האירוע שוחזר בהצלחה',
+        severity: 'success'
+      })
+      // Refresh incident data
+      refetch()
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'שגיאה בשחזור האירוע. נסה שוב',
+        severity: 'error'
+      })
+    }
+  }
+
   const showAssignButton = incident && (incident.status === 'new' || incident.status === 'assigned')
 
   // Show resolve button only to the assigned user when status is 'assigned'
@@ -106,6 +159,22 @@ export const IncidentDetailPage: FC = () => {
 
   // Show reopen button to all users when status is 'resolved'
   const canReopen = incident && incident.status === 'resolved'
+
+  // Show archive button only to IT Admin when incident is not already archived
+  const isAdmin = role === 'it_admin'
+  const canArchive = incident && incident.status !== 'archived' && isAdmin
+
+  // Show restore button only to IT Admin when incident is archived
+  const canRestore = incident && incident.status === 'archived' && isAdmin
+
+  // Smart back navigation - go to previous page or default to incidents list
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1)
+    } else {
+      navigate('/manage/incidents')
+    }
+  }
 
   // Loading state
   if (isLoading) {
@@ -121,12 +190,12 @@ export const IncidentDetailPage: FC = () => {
     return (
       <Box sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <IconButton onClick={() => navigate('/manage/incidents')} sx={{ marginInlineEnd: 1 }}>
+          <IconButton onClick={handleBack} sx={{ marginInlineEnd: 1 }}>
             <ArrowForwardIcon />
           </IconButton>
           <Typography variant="h6">פרטי דיווח</Typography>
         </Box>
-        <Alert severity="error">{error || 'הדיווח לא נמצא'}</Alert>
+        <AppAlert severity="error">{error || 'הדיווח לא נמצא'}</AppAlert>
       </Box>
     )
   }
@@ -144,11 +213,14 @@ export const IncidentDetailPage: FC = () => {
   // Extract assigner name (who assigned the incident)
   const assignerName = (incident as any).assigner?.full_name || 'לא ידוע'
 
+  // Extract archiver name (who archived the incident)
+  const archiverName = (incident as any).archiver?.full_name || 'לא ידוע'
+
   return (
     <Box sx={{ pb: 8 }}>
       {/* Header with back button */}
       <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'background.paper' }}>
-        <IconButton onClick={() => navigate('/manage/incidents')} sx={{ marginInlineEnd: 1 }}>
+        <IconButton onClick={handleBack} sx={{ marginInlineEnd: 1 }}>
           <ArrowForwardIcon />
         </IconButton>
         <Typography variant="h6">פרטי דיווח</Typography>
@@ -271,6 +343,43 @@ export const IncidentDetailPage: FC = () => {
                     }}
                   >
                     פתח מחדש
+                  </Button>
+                )}
+                {canArchive && (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<ArchiveIcon />}
+                    onClick={() => setShowArchiveDialog(true)}
+                    sx={{
+                      fontSize: '0.8rem',
+                      py: 0.5,
+                      px: 1.5,
+                      '& .MuiButton-startIcon': {
+                        marginInlineEnd: { xs: 0.5, sm: 1 }
+                      }
+                    }}
+                  >
+                    ארכיון
+                  </Button>
+                )}
+                {canRestore && (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<UnarchiveIcon />}
+                    onClick={handleRestore}
+                    sx={{
+                      fontSize: '0.8rem',
+                      py: 0.5,
+                      px: 1.5,
+                      '& .MuiButton-startIcon': {
+                        marginInlineEnd: { xs: 0.5, sm: 1 }
+                      }
+                    }}
+                  >
+                    שחזור
                   </Button>
                 )}
               </Box>
@@ -399,6 +508,44 @@ export const IncidentDetailPage: FC = () => {
                 </Box>
               </>
             )}
+
+            {/* Archive Info (if archived) */}
+            {incident.status === 'archived' && incident.archived_at && (
+              <>
+                <Divider />
+                <Typography variant="subtitle2" color="text.secondary">
+                  ארכיון
+                </Typography>
+                <Box sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+                  gap: 2
+                }}>
+                  <Box>
+                    <Typography variant="caption" color="text.secondary">
+                      תאריך ארכוב
+                    </Typography>
+                    <Typography variant="body1">
+                      {format(new Date(incident.archived_at), 'dd/MM/yyyy HH:mm')}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="text.secondary">
+                      ארכוב על ידי
+                    </Typography>
+                    <Typography variant="body1">{archiverName}</Typography>
+                  </Box>
+                  {incident.archive_reason && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">
+                        סיבת ארכוב
+                      </Typography>
+                      <Typography variant="body1">{incident.archive_reason}</Typography>
+                    </Box>
+                  )}
+                </Box>
+              </>
+            )}
           </Stack>
         </CardContent>
       </Card>
@@ -430,21 +577,23 @@ export const IncidentDetailPage: FC = () => {
         onNotesChange={setResolutionNotes}
       />
 
+      {/* Archive Dialog */}
+      <ArchiveDialog
+        open={showArchiveDialog}
+        onClose={() => setShowArchiveDialog(false)}
+        onConfirm={handleArchive}
+        isSubmitting={isArchiving}
+        reason={archiveReason}
+        onReasonChange={setArchiveReason}
+      />
+
       {/* Success/Error Snackbar */}
-      <Snackbar
+      <AppSnackbar
         open={snackbar.open}
-        autoHideDuration={snackbar.severity === 'success' ? 3000 : 6000}
+        message={snackbar.message}
+        severity={snackbar.severity}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+      />
     </Box>
   )
 }

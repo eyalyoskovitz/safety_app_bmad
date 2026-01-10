@@ -14,8 +14,6 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   CircularProgress,
-  Snackbar,
-  Alert,
   IconButton,
   Box,
   type SelectChangeEvent
@@ -33,6 +31,7 @@ import { getActiveLocations, submitIncident } from '../api'
 import type { PlantLocation, Severity, IncidentFormData } from '../types'
 import { PhotoCapture } from '../components/PhotoCapture'
 import { usePhotoUpload } from '../hooks/usePhotoUpload'
+import { AppSnackbar } from '../../../components/feedback/AppSnackbar'
 
 // Severity options with Hebrew labels, colors, and icons
 const SEVERITY_OPTIONS = [
@@ -370,38 +369,20 @@ export const ReportPage: FC = () => {
       </Stack>
     </Container>
 
-    <Snackbar
+    <AppSnackbar
       open={showSuccessSnackbar}
-      autoHideDuration={5000}
+      message="הדיווח נשלח בהצלחה"
+      severity="success"
       onClose={() => setShowSuccessSnackbar(false)}
-      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      sx={{ top: 24 }}
-    >
-      <Alert
-        onClose={() => setShowSuccessSnackbar(false)}
-        severity="success"
-        variant="filled"
-        sx={{ width: '100%' }}
-      >
-        הדיווח נשלח בהצלחה
-      </Alert>
-    </Snackbar>
+      autoHideDuration={5000}
+    />
 
-    <Snackbar
+    <AppSnackbar
       open={showErrorSnackbar}
+      message={errorMessage}
+      severity="error"
       onClose={() => setShowErrorSnackbar(false)}
-      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      sx={{ top: 24 }}
-    >
-      <Alert
-        onClose={() => setShowErrorSnackbar(false)}
-        severity="error"
-        variant="filled"
-        sx={{ width: '100%' }}
-      >
-        {errorMessage}
-      </Alert>
-    </Snackbar>
+    />
     </>
   )
 }
