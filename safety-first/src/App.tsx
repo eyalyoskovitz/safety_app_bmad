@@ -9,14 +9,17 @@ import { AppRoutes } from './routes'
  * App structure:
  * - ThemeProvider: RTL support, MUI theme, Hebrew locale
  * - AuthProvider: Authentication state and session management
- * - BrowserRouter: React Router 7 for client-side routing
+ * - BrowserRouter: React Router 7 for client-side routing with basename for GitHub Pages
  * - AppRoutes: Route configuration
  */
 function App() {
+  // Use basename for GitHub Pages deployment
+  const basename = import.meta.env.BASE_URL
+
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <BrowserRouter basename={basename}>
           <AppRoutes />
         </BrowserRouter>
       </AuthProvider>
